@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品管理</title>
+    <link rel="stylesheet" href="/css/admin_style.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <h2>电子商城</h2>
+            <a href="/admin">首页</a>
+            <a href="/admin/products">商品管理</a>
+            <a href="/admin/categories">分类管理</a>
+            <a href="/admin/orders">订单管理</a>
+            <a href="/admin/users">用户管理</a>
+            <a href="/logout">退出登录</a>
+        </div>
+        
+        <!-- 主内容 -->
+        <div class="main-content">
+            <div class="admin-header">
+                <h1>商品管理</h1>
+                <a href="/admin/product/add" class="btn">添加商品</a>
+            </div>
+            
+            <div class="admin-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>商品图片</th>
+                            <th>商品名称</th>
+                            <th>价格</th>
+                            <th>库存</th>
+                            <th>分类</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="product : ${products}">
+                            <td th:text="${product.id}"></td>
+                            <td>
+                                <div class="product-image">
+                                    <img th:src="${product.imageUrl}" th:if="${product.imageUrl != null and product.imageUrl != ''}" />
+                                    <span th:unless="${product.imageUrl != null and product.imageUrl != ''}">无</span>
+                                </div>
+                            </td>
+                            <td th:text="${product.name}"></td>
+                            <td th:text="'¥' + ${product.price}"></td>
+                            <td th:text="${product.stock}"></td>
+                            <td th:text="${product.categoryName}"></td>
+                            <td>
+                                <span class="status-badge" th:classappend="${product.status == 'ON_SALE' ? 'status-on-sale' : 'status-off-sale'}">
+                                    <span th:text="${product.status == 'ON_SALE' ? '在售' : '下架'}"></span>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a th:href="'/admin/product/edit?id=' + ${product.id}" class="btn btn-secondary">编辑</a>
+                                    <a th:href="'/admin/product/delete?id=' + ${product.id}" class="btn btn-danger" onclick="return confirm('确定删除吗？')">删除</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

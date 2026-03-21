@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - 电子商城'">电子商城</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div th:fragment="header">
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo"><a href="/">电子商城</a></div>
+            <form class="search-box" action="/search" method="get">
+                <input type="text" name="keyword" placeholder="搜索商品..." th:value="${keyword}">
+                <button type="submit">搜索</button>
+            </form>
+            <nav class="user-nav">
+                <a href="/cart">购物车</a>
+                <span th:if="${session.user == null}">
+                        <a href="/login">登录</a>
+                        <a href="/register">注册</a>
+                    </span>
+                <span th:if="${session.user != null}">
+                        <span th:text="'欢迎, ' + ${session.user.username}"></span>
+                        <a href="/order/list">我的订单</a>
+                        <a th:if="${session.user.role == 'ADMIN'}" href="/admin"> 管理后台</a>
+                        <a href="/profile">个人中心</a>
+                        <a href="/logout">退出</a>
+                    </span>
+            </nav>
+        </div>
+    </header>
+    <nav class="nav">
+        <div class="container nav-content">
+            <a href="/static">全部商品</a>
+            <a th:each="cat : ${categories}" th:href="'/category?id=' + ${cat.id}" th:text="${cat.name}"></a>
+        </div>
+    </nav>
+</div>
+</body>
+</html>

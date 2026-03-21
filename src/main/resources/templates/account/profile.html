@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('个人中心')}"></head>
+<body>
+<div th:replace="~{layout :: header}"></div>
+
+<main class="main">
+    <div class="container">
+        <h2 style="margin-bottom: 20px;">个人中心</h2>
+
+        <div class="form-container" style="max-width: 600px;">
+            <div th:if="${error}" class="error" th:text="${error}"></div>
+            <div th:if="${success}" class="success" th:text="${success}"></div>
+
+            <form action="/profile/update" method="post">
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" th:value="${user.username}" disabled>
+                </div>
+                <div class="form-group">
+                    <label>角色</label>
+                    <input type="text" th:value="${user.role == 'ADMIN' ? '管理员' : '普通用户'}" disabled>
+                </div>
+                <div class="form-group">
+                    <label>邮箱</label>
+                    <input type="email" name="email" th:value="${user.email}">
+                </div>
+                <div class="form-group">
+                    <label>手机号</label>
+                    <input type="text" name="phone" th:value="${user.phone}">
+                </div>
+                <div class="form-group">
+                    <label>收货地址</label>
+                    <textarea name="address" rows="3" th:text="${user.address}"></textarea>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">保存修改</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2026 电子商城 - 基于 Spring MVC 开发</p>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理</title>
+    <link rel="stylesheet" href="/css/admin_style.css">
+</head>
+<body>
+<div class="admin-container">
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <h2>电子商城</h2>
+        <a href="/admin">首页</a>
+        <a href="/admin/products">商品管理</a>
+        <a href="/admin/categories">分类管理</a>
+        <a href="/admin/orders">订单管理</a>
+        <a href="/admin/users">用户管理</a>
+        <a href="/logout">退出登录</a>
+    </div>
+
+    <!-- 主内容 -->
+    <div class="main-content">
+        <div class="admin-header">
+            <h1>后台管理</h1>
+            <div class="user-info">
+                <span th:text="'欢迎, ' + ${session.user.username}"></span>
+                <a href="/admin">首页</a>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>商品总数</h3>
+                <div class="value">20</div>
+            </div>
+            <div class="stat-card">
+                <h3>分类数量</h3>
+                <div class="value">5</div>
+            </div>
+            <div class="stat-card">
+                <h3>订单总数</h3>
+                <div class="value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>用户数量</h3>
+                <div class="value">2</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

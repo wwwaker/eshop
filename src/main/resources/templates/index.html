@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('首页')}"></head>
+<body>
+<div th:replace="~{layout :: header}"></div>
+
+<main class="main">
+    <div class="container">
+        <h2 th:if="${currentCategory != null}" th:text="${currentCategory.name}">分类名称</h2>
+        <h2 th:if="${keyword != null}" th:text="'搜索结果: ' + ${keyword}">搜索结果</h2>
+        <h2 th:if="${currentCategory == null && keyword == null}">热门商品</h2>
+
+        <div class="product-grid">
+            <div class="product-card" th:each="product : ${products}">
+                <a th:href="'/product?id=' + ${product.id}">
+                    <div class="product-image">商品图片</div>
+                </a>
+                <div class="product-info">
+                    <div class="product-name" th:text="${product.name}">商品名称</div>
+                    <div class="product-price" th:text="'¥' + ${product.price}">¥0.00</div>
+                    <div class="product-stock" th:text="'库存: ' + ${product.stock}">库存: 0</div>
+                    <form action="/cart/add" method="post">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        <button type="submit" class="btn">加入购物车</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(products)}" style="text-align: center; padding: 50px; color: #999;">
+            暂无商品
+        </div>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2026 电子商城 - 基于 Spring MVC 开发</p>
+    </div>
+</footer>
+</body>
+</html>

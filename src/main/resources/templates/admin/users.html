@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+    <link rel="stylesheet" href="/css/admin_style.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <h2>电子商城</h2>
+            <a href="/admin">首页</a>
+            <a href="/admin/products">商品管理</a>
+            <a href="/admin/categories">分类管理</a>
+            <a href="/admin/orders">订单管理</a>
+            <a href="/admin/users">用户管理</a>
+            <a href="/logout">退出登录</a>
+        </div>
+        
+        <!-- 主内容 -->
+        <div class="main-content">
+            <div class="admin-header">
+                <h1>用户管理</h1>
+            </div>
+            
+            <div class="admin-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>用户名</th>
+                            <th>邮箱</th>
+                            <th>手机号</th>
+                            <th>角色</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}">
+                            <td th:text="${user.id}"></td>
+                            <td th:text="${user.username}"></td>
+                            <td th:text="${user.email}"></td>
+                            <td th:text="${user.phone}"></td>
+                            <td>
+                                <span class="role-badge" th:classappend="${user.role == 'ADMIN' ? 'role-admin' : 'role-user'}">
+                                    <span th:text="${user.role == 'ADMIN' ? '管理员' : '普通用户'}"></span>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a th:href="'/admin/user/edit?id=' + ${user.id}" class="btn btn-secondary">编辑</a>
+                                    <a th:href="'/admin/user/delete?id=' + ${user.id}" class="btn btn-danger" onclick="return confirm('确定删除吗？')">删除</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

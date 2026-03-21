@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品管理</title>
+    <link rel="stylesheet" href="/css/admin_style.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <h2>电子商城</h2>
+            <a href="/admin">首页</a>
+            <a href="/admin/products">商品管理</a>
+            <a href="/admin/categories">分类管理</a>
+            <a href="/admin/orders">订单管理</a>
+            <a href="/admin/users">用户管理</a>
+            <a href="/logout">退出登录</a>
+        </div>
+        
+        <!-- 主内容 -->
+        <div class="main-content">
+            <div class="admin-header">
+                <h1 th:text="${product != null ? '编辑商品' : '添加商品'}"></h1>
+                <a href="/admin/products" class="btn btn-secondary">返回列表</a>
+            </div>
+            
+            <div class="form-container">
+                <form action="/admin/product/save" method="post">
+                    <input type="hidden" name="id" th:value="${product != null ? product.id : null}">
+                    
+                    <div class="form-group">
+                        <label>商品名称</label>
+                        <input type="text" name="name" th:value="${product != null ? product.name : ''}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>商品描述</label>
+                        <textarea name="description" th:text="${product != null ? product.description : ''}" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>价格</label>
+                        <input type="number" name="price" step="0.01" th:value="${product != null ? product.price : ''}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>库存</label>
+                        <input type="number" name="stock" th:value="${product != null ? product.stock : '0'}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>分类</label>
+                        <select name="categoryId" required>
+                            <option value="">请选择分类</option>
+                            <option th:each="category : ${categories}" 
+                                    th:value="${category.id}" 
+                                    th:text="${category.name}" 
+                                    th:selected="${product != null and product.categoryId == category.id}">
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="image-upload">
+                        <label>商品图片</label>
+                        <div class="image-preview">
+                            <img th:src="${product != null ? product.imageUrl : ''}" th:if="${product != null and product.imageUrl != null and product.imageUrl != ''}" id="previewImage" />
+                            <span th:unless="${product != null and product.imageUrl != null and product.imageUrl != ''}" id="noImage">无图片</span>
+                        </div>
+                        <input type="file" id="fileInput" style="display: none;">
+                        <button type="button" class="upload-btn" onclick="document.getElementById('fileInput').click()">上传图片</button>
+                        <input type="text" name="imageUrl" id="imageUrl" th:value="${product != null ? product.imageUrl : ''}" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>状态</label>
+                        <select name="status" required>
+                            <option value="ON_SALE" th:selected="${product != null and product.status == 'ON_SALE'}">在售</option>
+                            <option value="OFF_SALE" th:selected="${product != null and product.status == 'OFF_SALE'}">下架</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn">保存</button>
+                        <a href="/admin/products" class="btn btn-secondary">取消</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                fetch('/admin/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.url) {
+                        document.getElementById('imageUrl').value = data.url;
+                        document.getElementById('previewImage').src = data.url;
+                        document.getElementById('previewImage').style.display = 'block';
+                        document.getElementById('noImage').style.display = 'none';
+                    } else {
+                        alert('上传失败: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    alert('上传失败: ' + error.message);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

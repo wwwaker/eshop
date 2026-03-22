@@ -16,7 +16,7 @@ mysql -u root -p < src/main/resources/db/schema.sql
 
 ### 2. 初始化数据（可选）
 
-执行 `src/main/resources/db/data.sql` 文件初始化测试商品数据：
+执行 `src/main/resources/db/data.sql` 文件初始化测试数据：
 
 ```bash
 mysql -u root -p eshop < src/main/resources/db/data.sql

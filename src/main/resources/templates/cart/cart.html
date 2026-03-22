@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('购物车')}"></head>
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    
+    <main class="main">
+        <div class="container">
+            <h2 style="margin-bottom: 20px;">购物车</h2>
+            
+            <div th:if="${#lists.isEmpty(cartItems)}" style="text-align: center; padding: 50px; background: white; border-radius: 8px;">
+                <p style="color: #999; margin-bottom: 20px;">购物车是空的</p>
+                <a href="/" class="btn">去购物</a>
+            </div>
+            
+            <div th:if="${!#lists.isEmpty(cartItems)}">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>商品</th>
+                            <th>单价</th>
+                            <th>数量</th>
+                            <th>小计</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${cartItems}">
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div style="width: 60px; height: 60px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">图</div>
+                                    <span th:text="${item.product.name}">商品名称</span>
+                                </div>
+                            </td>
+                            <td th:text="'¥' + ${item.product.price}">¥0.00</td>
+                            <td>
+                                <form action="/cart/update" method="post" style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="hidden" name="cartItemId" th:value="${item.id}">
+                                    <input type="number" name="quantity" th:value="${item.quantity}" min="0" class="quantity-input">
+                                    <button type="submit" class="btn btn-secondary" style="margin: 0;">更新</button>
+                                </form>
+                            </td>
+                            <td th:text="'¥' + ${item.subtotal}">¥0.00</td>
+                            <td>
+                                <a th:href="'/cart/remove?id=' + ${item.id}" class="btn btn-secondary" style="background: #f44336;">删除</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="cart-total">
+                    总计: <span style="color: #ff6700; font-size: 24px;" th:text="'¥' + ${total}">¥0.00</span>
+                </div>
+                
+                <div style="text-align: right; margin-top: 20px;">
+                    <a href="/cart/clear" class="btn btn-secondary">清空购物车</a>
+                    <a href="/order/confirm" class="btn" style="margin-left: 10px;">去结算</a>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 电子商城 - 基于 Spring MVC 开发</p>
+        </div>
+    </footer>
+</body>
+</html>

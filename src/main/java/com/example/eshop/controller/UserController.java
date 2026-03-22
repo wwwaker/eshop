@@ -18,7 +18,7 @@ public class UserController {
 
     @GetMapping("/login")
     public String loginPage() {
-        return "account/login";
+        return "auth/login";
     }
 
     @PostMapping("/login")
@@ -32,13 +32,13 @@ public class UserController {
             return "redirect:/";
         } else {
             model.addAttribute("error", "用户名或密码错误");
-            return "account/login";
+            return "auth/login";
         }
     }
 
     @GetMapping("/register")
     public String registerPage() {
-        return "account/register";
+        return "auth/register";
     }
 
     @PostMapping("/register")
@@ -49,7 +49,7 @@ public class UserController {
                            Model model) {
         if (userService.findByUsername(username) != null) {
             model.addAttribute("error", "用户名已存在");
-            return "account/register";
+            return "auth/register";
         }
 
         User user = new User();
@@ -62,7 +62,7 @@ public class UserController {
             return "redirect:/login";
         } else {
             model.addAttribute("error", "注册失败");
-            return "account/register";
+            return "auth/register";
         }
     }
 
@@ -76,10 +76,10 @@ public class UserController {
     public String profile(HttpSession session, Model model) {
         User user = AuthUtil.getCurrentUser(session);
         if (user == null) {
-            return "redirect:/account/login";
+            return "redirect:/login";
         }
         model.addAttribute("user", user);
-        return "account/profile";
+        return "user/profile";
     }
 
     @PostMapping("/profile/update")
@@ -90,7 +90,7 @@ public class UserController {
                                 Model model) {
         User user = AuthUtil.getCurrentUser(session);
         if (user == null) {
-            return "redirect:/account/login";
+            return "redirect:/login";
         }
 
         user.setEmail(email);
@@ -105,6 +105,6 @@ public class UserController {
         } else {
             model.addAttribute("error", "更新失败");
         }
-        return "account/profile";
+        return "user/profile";
     }
 }

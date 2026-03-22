@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('订单详情')}"></head>
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    
+    <main class="main">
+        <div class="container">
+            <h2 style="margin-bottom: 20px;">订单详情</h2>
+            
+            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                    <div>
+                        <p><strong>订单编号:</strong> <span th:text="${order.orderNo}"></span></p>
+                        <p><strong>下单时间:</strong> <span th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+                    </div>
+                    <div>
+                        <span class="order-status" th:classappend="${order.status == 'PENDING' ? 'status-pending' : 
+                              order.status == 'PAID' ? 'status-paid' : 
+                              order.status == 'SHIPPED' ? 'status-shipped' : 
+                              order.status == 'COMPLETED' ? 'status-completed' : 'status-cancelled'}"
+                              th:text="${order.status == 'PENDING' ? '待支付' : 
+                                       order.status == 'PAID' ? '已支付' : 
+                                       order.status == 'SHIPPED' ? '已发货' : 
+                                       order.status == 'COMPLETED' ? '已完成' : '已取消'}">状态</span>
+                    </div>
+                </div>
+                
+                <h3 style="margin-bottom: 15px;">收货信息</h3>
+                <p><strong>收货人:</strong> <span th:text="${order.receiverName}"></span></p>
+                <p><strong>联系电话:</strong> <span th:text="${order.receiverPhone}"></span></p>
+                <p><strong>收货地址:</strong> <span th:text="${order.receiverAddress}"></span></p>
+            </div>
+            
+            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px;">商品清单</h3>
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>商品</th>
+                            <th>单价</th>
+                            <th>数量</th>
+                            <th>小计</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${order.items}">
+                            <td th:text="${item.productName}">商品名称</td>
+                            <td th:text="'¥' + ${item.productPrice}">¥0.00</td>
+                            <td th:text="${item.quantity}">1</td>
+                            <td th:text="'¥' + ${item.subtotal}">¥0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div style="text-align: right; margin-top: 20px; font-size: 18px;">
+                    订单总额: <span style="color: #ff6700; font-size: 24px; font-weight: bold;" th:text="'¥' + ${order.totalAmount}">¥0.00</span>
+                </div>
+            </div>
+            
+            <div style="text-align: center;" th:if="${order.status == 'PENDING'}">
+                <form action="/order/pay" method="post" style="display: inline;">
+                    <input type="hidden" name="orderId" th:value="${order.id}">
+                    <button type="submit" class="btn" style="padding: 12px 40px; font-size: 16px;">立即支付</button>
+                </form>
+                <form action="/order/cancel" method="post" style="display: inline; margin-left: 10px;">
+                    <input type="hidden" name="orderId" th:value="${order.id}">
+                    <button type="submit" class="btn btn-secondary">取消订单</button>
+                </form>
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="/order/list" class="btn btn-secondary">返回订单列表</a>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 电子商城 - 基于 Spring MVC 开发</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('我的订单')}"></head>
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    
+    <main class="main">
+        <div class="container">
+            <h2 style="margin-bottom: 20px;">我的订单</h2>
+            
+            <div th:if="${#lists.isEmpty(orders)}" style="text-align: center; padding: 50px; background: white; border-radius: 8px;">
+                <p style="color: #999; margin-bottom: 20px;">暂无订单</p>
+                <a href="/" class="btn">去购物</a>
+            </div>
+            
+            <div class="order-list" th:if="${!#lists.isEmpty(orders)}">
+                <div class="order-item" th:each="order : ${orders}">
+                    <div class="order-header">
+                        <div>
+                            <p><strong>订单编号:</strong> <span th:text="${order.orderNo}"></span></p>
+                            <p style="color: #999; font-size: 12px;" th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></p>
+                        </div>
+                        <div>
+                            <span class="order-status" th:classappend="${order.status == 'PENDING' ? 'status-pending' : 
+                                  order.status == 'PAID' ? 'status-paid' : 
+                                  order.status == 'SHIPPED' ? 'status-shipped' : 
+                                  order.status == 'COMPLETED' ? 'status-completed' : 'status-cancelled'}"
+                                  th:text="${order.status == 'PENDING' ? '待支付' : 
+                                           order.status == 'PAID' ? '已支付' : 
+                                           order.status == 'SHIPPED' ? '已发货' : 
+                                           order.status == 'COMPLETED' ? '已完成' : '已取消'}">状态</span>
+                        </div>
+                    </div>
+                    
+                    <div th:each="item : ${order.items}" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
+                        <span th:text="${item.productName}">商品名称</span>
+                        <span th:text="'¥' + ${item.productPrice} + ' x ' + ${item.quantity}">¥0.00 x 1</span>
+                    </div>
+                    
+                    <div style="text-align: right; margin-top: 15px;">
+                        <span>订单总额: </span>
+                        <span style="color: #ff6700; font-size: 18px; font-weight: bold;" th:text="'¥' + ${order.totalAmount}">¥0.00</span>
+                    </div>
+                    
+                    <div style="text-align: right; margin-top: 15px;">
+                        <a th:href="'/order/detail?orderNo=' + ${order.orderNo}" class="btn btn-secondary">查看详情</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 电子商城 - 基于 Spring MVC 开发</p>
+        </div>
+    </footer>
+</body>
+</html>

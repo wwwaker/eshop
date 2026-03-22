@@ -15,6 +15,7 @@
             <a href="/admin/categories">分类管理</a>
             <a href="/admin/orders">订单管理</a>
             <a href="/admin/users">用户管理</a>
+            <a href="/">返回前台</a>
             <a href="/logout">退出登录</a>
         </div>
         
@@ -64,8 +65,8 @@
                     <div class="image-upload">
                         <label>商品图片</label>
                         <div class="image-preview">
-                            <img th:src="${product != null ? product.imageUrl : ''}" th:if="${product != null and product.imageUrl != null and product.imageUrl != ''}" id="previewImage" />
-                            <span th:unless="${product != null and product.imageUrl != null and product.imageUrl != ''}" id="noImage">无图片</span>
+                            <img th:src="${product != null ? product.imageUrl : ''}" th:style="${product != null and product.imageUrl != null and product.imageUrl != '' ? 'display: block;' : 'display: none;'}" id="previewImage" />
+                            <span th:style="${product != null and product.imageUrl != null and product.imageUrl != '' ? 'display: none;' : 'display: block;'}" id="noImage">无图片</span>
                         </div>
                         <input type="file" id="fileInput" style="display: none;">
                         <button type="button" class="upload-btn" onclick="document.getElementById('fileInput').click()">上传图片</button>
@@ -104,9 +105,15 @@
                 .then(data => {
                     if (data.url) {
                         document.getElementById('imageUrl').value = data.url;
-                        document.getElementById('previewImage').src = data.url;
-                        document.getElementById('previewImage').style.display = 'block';
-                        document.getElementById('noImage').style.display = 'none';
+                        const previewImage = document.getElementById('previewImage');
+                        const noImage = document.getElementById('noImage');
+                        if (previewImage) {
+                            previewImage.src = data.url;
+                            previewImage.style.display = 'block';
+                        }
+                        if (noImage) {
+                            noImage.style.display = 'none';
+                        }
                     } else {
                         alert('上传失败: ' + data.error);
                     }

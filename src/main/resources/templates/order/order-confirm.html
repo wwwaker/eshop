@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('确认订单')}"></head>
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    
+    <main class="main">
+        <div class="container">
+            <h2 style="margin-bottom: 20px;">确认订单</h2>
+            
+            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px;">收货信息</h3>
+                <form id="orderForm" action="/order/create" method="post">
+                    <div class="form-group">
+                        <label>收货人姓名</label>
+                        <input type="text" name="receiverName" th:value="${user.username}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>联系电话</label>
+                        <input type="text" name="receiverPhone" th:value="${user.phone}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>收货地址</label>
+                        <textarea name="receiverAddress" rows="3" th:text="${user.address}" required></textarea>
+                    </div>
+                </form>
+            </div>
+            
+            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px;">商品清单</h3>
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>商品</th>
+                            <th>单价</th>
+                            <th>数量</th>
+                            <th>小计</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${cartItems}">
+                            <td th:text="${item.product.name}">商品名称</td>
+                            <td th:text="'¥' + ${item.product.price}">¥0.00</td>
+                            <td th:text="${item.quantity}">1</td>
+                            <td th:text="'¥' + ${item.subtotal}">¥0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="background: white; padding: 20px; border-radius: 8px; text-align: right;">
+                <div style="font-size: 18px; margin-bottom: 15px;">
+                    订单总额: <span style="color: #ff6700; font-size: 24px; font-weight: bold;" th:text="'¥' + ${total}">¥0.00</span>
+                </div>
+                <a href="/cart" class="btn btn-secondary">返回购物车</a>
+                <button type="submit" form="orderForm" class="btn" style="margin-left: 10px;">提交订单</button>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 电子商城 - 基于 Spring MVC 开发</p>
+        </div>
+    </footer>
+</body>
+</html>

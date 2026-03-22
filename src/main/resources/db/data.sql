@@ -8,10 +8,10 @@ INSERT INTO categories (name, description, sort_order) VALUES
 
 -- 插入商品数据
 INSERT INTO products (name, description, price, stock, category_id, image_url, status) VALUES
-('iPhone 15 Pro', '苹果最新旗舰手机，A17 Pro芯片', 8999.00, 100, 1, '/images/iphone15.jpg', 'ON_SALE'),
-('MacBook Pro 14', 'M3芯片，14英寸笔记本电脑', 14999.00, 50, 1, '/images/macbook.jpg', 'ON_SALE'),
-('iPad Air', 'M1芯片，10.9英寸平板电脑', 4799.00, 80, 1, '/images/ipad.jpg', 'ON_SALE'),
-('AirPods Pro 2', '主动降噪无线耳机', 1899.00, 200, 1, '/images/airpods.jpg', 'ON_SALE'),
+('iPhone 17 Pro', '苹果最新旗舰手机，A19 Pro芯片', 8999.00, 100, 1, '/images/iphone17.png', 'ON_SALE'),
+('MacBook Pro M5', 'M5 Pro芯片，14英寸笔记本电脑', 13999.00, 50, 1, '/images/macbook.png', 'ON_SALE'),
+('iPad Air', 'M4芯片，10.9英寸平板电脑', 4799.00, 80, 1, '/images/ipad.jpg', 'ON_SALE'),
+('AirPods Pro 3', '主动降噪无线耳机', 1899.00, 200, 1, '/images/airpods.png', 'ON_SALE'),
 ('纯棉T恤', '100%纯棉，舒适透气', 99.00, 500, 2, '/images/tshirt.jpg', 'ON_SALE'),
 ('运动鞋', '轻便透气，适合跑步', 299.00, 300, 2, '/images/shoes.jpg', 'ON_SALE'),
 ('牛仔裤', '经典版型，修身显瘦', 199.00, 400, 2, '/images/jeans.jpg', 'ON_SALE'),
@@ -29,6 +29,3 @@ INSERT INTO products (name, description, price, stock, category_id, image_url, s
 ('纯牛奶', '全脂纯牛奶，1L装', 12.00, 500, 5, '/images/milk.jpg', 'ON_SALE'),
 ('咖啡豆', '阿拉比卡豆，中度烘焙', 68.00, 200, 5, '/images/coffee.jpg', 'ON_SALE');
 
--- 注意：用户账号已由 DataInitializer 自动创建
--- 管理员: admin / admin123
--- 普通用户: user / user123

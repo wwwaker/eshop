@@ -6,11 +6,23 @@
 
 ### 1. 创建数据库
 
-```sql
-CREATE DATABASE eshop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+执行 `src/main/resources/db/schema.sql` 文件创建数据库和表结构：
+
+```bash
+mysql -u root -p < src/main/resources/db/schema.sql
 ```
 
-### 2. 配置应用
+或手动在MySQL中执行
+
+### 2. 初始化数据（可选）
+
+执行 `src/main/resources/db/data.sql` 文件初始化测试数据：
+
+```bash
+mysql -u root -p eshop < src/main/resources/db/data.sql
+```
+
+### 3. 配置应用
 
 复制配置文件模板并修改数据库连接信息：
 
@@ -24,13 +36,13 @@ spring.datasource.username=你的数据库用户名
 spring.datasource.password=你的数据库密码
 ```
 
-### 3. 运行项目
+### 4. 运行项目
 
 ```bash
 mvn spring-boot:run
 ```
 
-### 4. 访问应用
+### 5. 访问应用
 
 - 前台：http://localhost:8080
 - 后台：http://localhost:8080/admin

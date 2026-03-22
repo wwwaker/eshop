@@ -5,6 +5,7 @@ import com.example.eshop.entity.Order;
 import com.example.eshop.entity.Product;
 import com.example.eshop.entity.User;
 import com.example.eshop.service.CategoryService;
+import com.example.eshop.service.OrderService;
 import com.example.eshop.service.ProductService;
 import com.example.eshop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,8 @@ public class AdminController {
     @Autowired
     private CategoryService categoryService;
 
-//    @Autowired
-//    private OrderService orderService;
+    @Autowired
+    private OrderService orderService;
 
     @Autowired
     private UserService userService;
@@ -90,24 +91,24 @@ public class AdminController {
     }
 
     @GetMapping("/orders")
-//    public String adminOrders(Model model) {
-//        List<Order> orders = orderService.findAll();
-//        model.addAttribute("orders", orders);
-//        return "admin/orders";
-//    }
+    public String adminOrders(Model model) {
+        List<Order> orders = orderService.findAll();
+        model.addAttribute("orders", orders);
+        return "admin/orders";
+    }
 
-//    @PostMapping("/order/ship")
-//    public String shipOrder(@RequestParam("orderId") Long orderId) {
-//        orderService.shipOrder(orderId);
-//        return "redirect:/admin/orders";
-//    }
+    @PostMapping("/order/ship")
+    public String shipOrder(@RequestParam("orderId") Long orderId) {
+        orderService.shipOrder(orderId);
+        return "redirect:/admin/orders";
+    }
 
-//    @GetMapping("/categories")
-//    public String adminCategories(Model model) {
-//        List<Category> categories = categoryService.findAll();
-//        model.addAttribute("categories", categories);
-//        return "admin/categories";
-//    }
+    @GetMapping("/categories")
+    public String adminCategories(Model model) {
+        List<Category> categories = categoryService.findAll();
+        model.addAttribute("categories", categories);
+        return "admin/categories";
+    }
 
     @PostMapping("/category/save")
     public String saveCategory(@RequestParam(value = "id", required = false) Long id,

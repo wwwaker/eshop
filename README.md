@@ -16,7 +16,7 @@ mysql -u root -p < src/main/resources/db/schema.sql
 
 ### 2. 初始化数据（可选）
 
-执行 `src/main/resources/db/data.sql` 文件初始化测试数据：
+执行 `src/main/resources/db/data.sql` 文件初始化测试商品数据：
 
 ```bash
 mysql -u root -p eshop < src/main/resources/db/data.sql
@@ -46,6 +46,15 @@ mvn spring-boot:run
 
 - 前台：http://localhost:8080
 - 后台：http://localhost:8080/admin
+
+## 默认账号
+
+应用启动后会自动创建以下默认账号：
+
+| 用户名 | 密码 | 角色 |
+|--------|------|------|
+| admin | admin123 | 管理员 |
+| user | user123 | 普通用户 |
 
 ## 注意事项
 

@@ -17,4 +17,4 @@ spring.thymeleaf.suffix=.html
 spring.thymeleaf.mode=HTML
 spring.thymeleaf.encoding=UTF-8
 
-logging.level.com.example.eshop.mapper=debug
+logging.level.com.example.eshop.dao=debug

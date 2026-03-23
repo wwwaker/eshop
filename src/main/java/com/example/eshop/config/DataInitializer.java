@@ -1,7 +1,7 @@
 package com.example.eshop.config;
 
 import com.example.eshop.entity.User;
-import com.example.eshop.mapper.UserMapper;
+import com.example.eshop.dao.UserDao;
 import com.example.eshop.util.PasswordUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,7 @@ public class DataInitializer implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
     @Autowired
-    private UserMapper userMapper;
+    private UserDao userDao;
 
     @Override
     public void run(String... args) throws Exception {
@@ -35,7 +35,7 @@ public class DataInitializer implements CommandLineRunner {
         String adminUsername = "admin";
         String adminPassword = "admin123";
         
-        User existingAdmin = userMapper.findByUsername(adminUsername);
+        User existingAdmin = userDao.findByUsername(adminUsername);
         if (existingAdmin == null) {
             User admin = new User();
             admin.setUsername(adminUsername);
@@ -43,7 +43,7 @@ public class DataInitializer implements CommandLineRunner {
             admin.setEmail("admin@eshop.com");
             admin.setRole("ADMIN");
             
-            userMapper.insert(admin);
+            userDao.insert(admin);
             logger.info("管理员账号创建成功: {}", adminUsername);
         } else {
             logger.info("管理员账号已存在: {}", adminUsername);
@@ -54,7 +54,7 @@ public class DataInitializer implements CommandLineRunner {
         String username = "user";
         String password = "user123";
         
-        User existingUser = userMapper.findByUsername(username);
+        User existingUser = userDao.findByUsername(username);
         if (existingUser == null) {
             User user = new User();
             user.setUsername(username);
@@ -62,7 +62,7 @@ public class DataInitializer implements CommandLineRunner {
             user.setEmail("user@eshop.com");
             user.setRole("USER");
             
-            userMapper.insert(user);
+            userDao.insert(user);
             logger.info("普通用户账号创建成功: {}", username);
         } else {
             logger.info("普通用户账号已存在: {}", username);

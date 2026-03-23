@@ -20,7 +20,7 @@
                               order.status == 'SHIPPED' ? 'status-shipped' : 
                               order.status == 'COMPLETED' ? 'status-completed' : 'status-cancelled'}"
                               th:text="${order.status == 'PENDING' ? '待支付' : 
-                                       order.status == 'PAID' ? '已支付' : 
+                                       order.status == 'PAID' ? '已支付' :
                                        order.status == 'SHIPPED' ? '已发货' : 
                                        order.status == 'COMPLETED' ? '已完成' : '已取消'}">状态</span>
                     </div>
@@ -61,7 +61,7 @@
             <div style="text-align: center;" th:if="${order.status == 'PENDING'}">
                 <form action="/order/pay" method="post" style="display: inline;">
                     <input type="hidden" name="orderId" th:value="${order.id}">
-                    <button type="submit" class="btn" style="padding: 12px 40px; font-size: 16px;">立即支付</button>
+                    <button type="submit" class="btn" style="padding: 12px 40px; font-size: 16px;" th:if="${!disablePayBtn}">立即支付</button>
                 </form>
                 <form action="/order/cancel" method="post" style="display: inline; margin-left: 10px;">
                     <input type="hidden" name="orderId" th:value="${order.id}">

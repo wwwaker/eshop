@@ -6,6 +6,8 @@ import com.example.eshop.service.CartService;
 import com.example.eshop.service.OrderService;
 import com.example.eshop.util.AuthUtil;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,7 @@ import java.util.List;
 @Controller
 public class OrderController {
 
+    private static final Logger log = LoggerFactory.getLogger(OrderController.class);
     @Autowired
     private OrderService orderService;
 
@@ -74,9 +77,16 @@ public class OrderController {
         }
 
         Order order = orderService.findByOrderNo(orderNo);
-        if (order == null || !order.getUserId().equals(user.getId())) {
+        // 只有管理员或当前订单用户可查看指定订单
+        boolean isAdmin = "ADMIN".equals(user.getRole());
+        if ((order == null || !order.getUserId().equals(user.getId())) && !isAdmin) {
             return "redirect:/order/list";
         }
+
+        // 管理员查看非自购订单时，禁用支付按钮，且仅可取消未支付订单
+        boolean disablePayBtn = isAdmin && !order.getUserId().equals(user.getId());
+        model.addAttribute("disablePayBtn", disablePayBtn);
+        log.info("{}",disablePayBtn);
 
         model.addAttribute("order", order);
         return "order/order-detail";

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.eshop.dao.UserDao">
+
+    <resultMap id="BaseResultMap" type="com.example.eshop.entity.User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="address" column="address"/>
+        <result property="role" column="role"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT * FROM users WHERE id = #{id}
+    </select>
+
+    <select id="findByUsername" resultMap="BaseResultMap">
+        SELECT * FROM users WHERE username = #{username}
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT * FROM users
+    </select>
+
+    <insert id="insert" parameterType="com.example.eshop.entity.User" 
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (username, password, email, phone, address, role) 
+        VALUES (#{username}, #{password}, #{email}, #{phone}, #{address}, #{role})
+    </insert>
+
+    <update id="update" parameterType="com.example.eshop.entity.User">
+        UPDATE users 
+        SET username = #{username}, 
+            email = #{email}, 
+            phone = #{phone}, 
+            address = #{address}, 
+            role = #{role} 
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM users WHERE id = #{id}
+    </delete>
+
+</mapper>

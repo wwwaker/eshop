@@ -3,10 +3,10 @@ package com.example.eshop.service;
 import com.example.eshop.entity.CartItem;
 import com.example.eshop.entity.Order;
 import com.example.eshop.entity.OrderItem;
-import com.example.eshop.mapper.CartItemMapper;
-import com.example.eshop.mapper.OrderItemMapper;
-import com.example.eshop.mapper.OrderMapper;
-import com.example.eshop.mapper.ProductMapper;
+import com.example.eshop.dao.CartItemDao;
+import com.example.eshop.dao.OrderItemDao;
+import com.example.eshop.dao.OrderDao;
+import com.example.eshop.dao.ProductDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,45 +21,45 @@ import java.util.UUID;
 public class OrderService {
 
     @Autowired
-    private OrderMapper orderMapper;
+    private OrderDao orderDao;
 
     @Autowired
-    private OrderItemMapper orderItemMapper;
+    private OrderItemDao orderItemDao;
 
     @Autowired
-    private CartItemMapper cartItemMapper;
+    private CartItemDao cartItemDao;
 
     @Autowired
-    private ProductMapper productMapper;
+    private ProductDao productDao;
 
     public Order findById(Long id) {
-        Order order = orderMapper.findById(id);
+        Order order = orderDao.findById(id);
         if (order != null) {
-            order.setItems(orderItemMapper.findByOrderId(id));
+            order.setItems(orderItemDao.findByOrderId(id));
         }
         return order;
     }
 
     public Order findByOrderNo(String orderNo) {
-        Order order = orderMapper.findByOrderNo(orderNo);
+        Order order = orderDao.findByOrderNo(orderNo);
         if (order != null) {
-            order.setItems(orderItemMapper.findByOrderId(order.getId()));
+            order.setItems(orderItemDao.findByOrderId(order.getId()));
         }
         return order;
     }
 
     public List<Order> findByUserId(Long userId) {
-        List<Order> orders = orderMapper.findByUserId(userId);
+        List<Order> orders = orderDao.findByUserId(userId);
         for (Order order : orders) {
-            order.setItems(orderItemMapper.findByOrderId(order.getId()));
+            order.setItems(orderItemDao.findByOrderId(order.getId()));
         }
         return orders;
     }
 
     public List<Order> findAll() {
-        List<Order> orders = orderMapper.findAll();
+        List<Order> orders = orderDao.findAll();
         for (Order order : orders) {
-            order.setItems(orderItemMapper.findByOrderId(order.getId()));
+            order.setItems(orderItemDao.findByOrderId(order.getId()));
         }
         return orders;
     }
@@ -67,7 +67,7 @@ public class OrderService {
     @Transactional
     public Order createOrder(Long userId, String receiverName, String receiverPhone, String receiverAddress) {
         System.out.println("开始创建订单，用户ID: " + userId);
-        List<CartItem> cartItems = cartItemMapper.findByUserId(userId);
+        List<CartItem> cartItems = cartItemDao.findByUserId(userId);
         System.out.println("购物车项目数量: " + cartItems.size());
         if (cartItems.isEmpty()) {
             System.out.println("购物车为空");
@@ -78,7 +78,7 @@ public class OrderService {
         for (CartItem item : cartItems) {
             if (item.getProduct() == null) {
                 System.out.println("商品信息缺失，正在加载商品ID: " + item.getProductId());
-                item.setProduct(productMapper.findById(item.getProductId()));
+                item.setProduct(productDao.findById(item.getProductId()));
             }
         }
 
@@ -107,7 +107,7 @@ public class OrderService {
         order.setReceiverPhone(receiverPhone);
         order.setReceiverAddress(receiverAddress);
         System.out.println("创建订单: 订单号=" + orderNo + ", 总金额=" + totalAmount);
-        int insertResult = orderMapper.insert(order);
+        int insertResult = orderDao.insert(order);
         System.out.println("保存订单结果: " + insertResult + ", 订单ID: " + order.getId());
 
         for (CartItem cartItem : cartItems) {
@@ -119,14 +119,14 @@ public class OrderService {
             orderItem.setQuantity(cartItem.getQuantity());
             orderItem.setSubtotal(cartItem.getSubtotal());
             System.out.println("创建订单项: 商品ID=" + cartItem.getProductId() + ", 数量=" + cartItem.getQuantity() + ", 小计=" + cartItem.getSubtotal());
-            int itemInsertResult = orderItemMapper.insert(orderItem);
+            int itemInsertResult = orderItemDao.insert(orderItem);
             System.out.println("保存订单项结果: " + itemInsertResult);
 
-            int stockResult = productMapper.decreaseStock(cartItem.getProductId(), cartItem.getQuantity());
+            int stockResult = productDao.decreaseStock(cartItem.getProductId(), cartItem.getQuantity());
             System.out.println("减少库存结果: " + stockResult + ", 商品ID=" + cartItem.getProductId() + ", 数量=" + cartItem.getQuantity());
         }
 
-        int deleteResult = cartItemMapper.deleteByUserId(userId);
+        int deleteResult = cartItemDao.deleteByUserId(userId);
         System.out.println("清空购物车结果: " + deleteResult);
 
         System.out.println("订单创建完成，订单号: " + orderNo);
@@ -134,19 +134,19 @@ public class OrderService {
     }
 
     public boolean payOrder(Long orderId) {
-        return orderMapper.updateStatus(orderId, "PAID") > 0;
+        return orderDao.updateStatus(orderId, "PAID") > 0;
     }
 
     public boolean shipOrder(Long orderId) {
-        return orderMapper.updateStatus(orderId, "SHIPPED") > 0;
+        return orderDao.updateStatus(orderId, "SHIPPED") > 0;
     }
 
     public boolean completeOrder(Long orderId) {
-        return orderMapper.updateStatus(orderId, "COMPLETED") > 0;
+        return orderDao.updateStatus(orderId, "COMPLETED") > 0;
     }
 
     public boolean cancelOrder(Long orderId) {
-        return orderMapper.updateStatus(orderId, "CANCELLED") > 0;
+        return orderDao.updateStatus(orderId, "CANCELLED") > 0;
     }
 
     private String generateOrderNo() {

@@ -36,7 +36,11 @@ public class AdminController {
     private UserService userService;
 
     @GetMapping("")
-    public String adminIndex() {
+    public String adminIndex(Model model) {
+        model.addAttribute("productCount", productService.findAll().size());
+        model.addAttribute("categoryCount", categoryService.findAll().size());
+        model.addAttribute("orderCount", orderService.findAll().size());
+        model.addAttribute("userCount", userService.findAll().size());
         return "admin/index";
     }
 

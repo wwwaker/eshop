@@ -32,19 +32,19 @@
         <div class="stats">
             <div class="stat-card">
                 <h3>商品总数</h3>
-                <div class="value">20</div>
+                <div class="value" th:text="${productCount}">0</div>
             </div>
             <div class="stat-card">
                 <h3>分类数量</h3>
-                <div class="value">5</div>
+                <div class="value" th:text="${categoryCount}">0</div>
             </div>
             <div class="stat-card">
                 <h3>订单总数</h3>
-                <div class="value">0</div>
+                <div class="value" th:text="${orderCount}">0</div>
             </div>
             <div class="stat-card">
                 <h3>用户数量</h3>
-                <div class="value">2</div>
+                <div class="value" th:text="${userCount}">0</div>
             </div>
         </div>
     </div>

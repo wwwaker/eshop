@@ -53,6 +53,14 @@
         WHERE p.name LIKE CONCAT('%', #{keyword}, '%') AND p.status = 'ON_SALE'
     </select>
 
+    <select id="searchSuggestions" resultType="java.lang.String">
+        SELECT DISTINCT p.name
+        FROM products p
+        WHERE p.name LIKE CONCAT('%', #{keyword}, '%') AND p.status = 'ON_SALE'
+        ORDER BY p.name
+            LIMIT 10
+    </select>
+
     <insert id="insert" parameterType="com.example.eshop.entity.Product" 
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO products (name, description, price, stock, category_id, image_url, status) 

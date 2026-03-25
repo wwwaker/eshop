@@ -19,6 +19,8 @@ public interface ProductDao {
 
     List<Product> searchByName(String keyword);
 
+    List<String> searchSuggestions(String keyword);
+
     int insert(Product product);
 
     int update(Product product);

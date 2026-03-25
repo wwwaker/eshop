@@ -33,6 +33,10 @@ public class ProductService {
         return productDao.searchByName(keyword);
     }
 
+    public List<String> searchSuggestions(String keyword) {
+        return productDao.searchSuggestions(keyword);
+    }
+
     public boolean save(Product product) {
         if (product.getId() == null) {
             return productDao.insert(product) > 0;

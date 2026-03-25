@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductService {
@@ -51,6 +52,18 @@ public class ProductService {
 
     public boolean decreaseStock(Long id, Integer quantity) {
         return productDao.decreaseStock(id, quantity) > 0;
+    }
+
+    public int countTodayNewProducts() {
+        return productDao.countTodayNewProducts();
+    }
+
+    public List<Map<String, Object>> getSalesTrend(int days) {
+        return productDao.getSalesTrend(days);
+    }
+
+    public List<Map<String, Object>> getHotProducts(int limit) {
+        return productDao.getHotProducts(limit);
     }
 
 }

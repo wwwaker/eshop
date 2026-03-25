@@ -62,4 +62,32 @@
         DELETE FROM orders WHERE id = #{id}
     </delete>
 
+    <select id="countTodayOrders" resultType="int">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE DATE(created_at) = CURDATE()
+    </select>
+
+    <select id="getTodaySales" resultType="java.util.Map">
+        SELECT
+            COUNT(id) as todayOrderCount,
+            COALESCE(SUM(total_amount), 0) as todayTotalAmount
+        FROM orders
+        WHERE DATE(created_at) = CURDATE()
+    </select>
+
+    <select id="countTodayNewUsers" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE DATE(created_at) = CURDATE()
+    </select>
+
+    <select id="getUserActivityStats" resultType="java.util.Map">
+        SELECT
+            (SELECT COUNT(*) FROM users) as totalUsers,
+            (SELECT COUNT(DISTINCT user_id) FROM orders WHERE DATE(created_at) = CURDATE()) as activeUsersToday,
+            (SELECT COUNT(DISTINCT user_id) FROM orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)) as activeUsersWeek,
+            (SELECT COUNT(DISTINCT user_id) FROM orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)) as activeUsersMonth
+    </select>
+
 </mapper>

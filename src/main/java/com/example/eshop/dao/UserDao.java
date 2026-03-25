@@ -4,6 +4,7 @@ import com.example.eshop.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface UserDao {
@@ -21,4 +22,6 @@ public interface UserDao {
     int update(User user);
 
     int deleteById(Long id);
+    
+    int countTodayNewUsers();
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -97,5 +98,10 @@ public class HomeController {
         model.addAttribute("product", product);
         model.addAttribute("imageExists", imageExists);
         return "product/product-detail";
+    }
+    @GetMapping("/api/search-suggestions")
+    @ResponseBody
+    public List<String> searchSuggestions(@RequestParam("keyword") String keyword) {
+        return productService.searchSuggestions(keyword);
     }
 }

@@ -5,16 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title} + ' - 电子商城'">电子商城</title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .search-container {
+            position: relative;
+            display: inline-block;
+        }
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #2e899e;
+            border: 1px solid #ddd;
+            border-top: none;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 9999;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            font-size: 14px;
+        }
+        .search-suggestions div {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .search-suggestions div:hover {
+            background-color: rgba(137, 15, 15, 0.84);
+        }
+        .search-suggestions div:first-child {
+            border-top: none;
+        }
+    </style>
 </head>
 <body>
 <div th:fragment="header">
     <header class="header">
         <div class="container header-content">
             <div class="logo"><a href="/">电子商城</a></div>
-            <form class="search-box" action="/search" method="get">
-                <input type="text" name="keyword" placeholder="搜索商品..." th:value="${keyword}">
-                <button type="submit">搜索</button>
-            </form>
+<!--            <form class="search-box" action="/search" method="get">-->
+<!--                <input type="text" name="keyword" placeholder="搜索商品..." th:value="${keyword}">-->
+<!--                <button type="submit">搜索</button>-->
+<!--            </form>-->
+            <div class="search-container">
+                <form class="search-box" action="/search" method="get">
+                    <input type="text" id="search-input" name="keyword" placeholder="搜索商品..." th:value="${keyword}">
+                    <button type="submit">搜索</button>
+                </form>
+            </div>
             <nav class="user-nav">
                 <a href="/cart">购物车</a>
                 <span th:if="${session.user == null}">
@@ -29,6 +66,20 @@
                         <a href="/logout">退出</a>
                     </span>
             </nav>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    console.log('DOM 加载完成，搜索功能已初始化');
+
+                    const searchInput = document.getElementById('search-input');
+
+                    if (!searchInput) {
+                        console.error('搜索输入元素未找到');
+                        return;
+                    }
+
+                    console.log('搜索功能已禁用自动建议，只在提交时搜索');
+                });
+            </script>
         </div>
     </header>
     <nav class="nav">

@@ -22,6 +22,10 @@ public class UserService {
         return userDao.findByUsername(username);
     }
 
+    public User findByEmail(String email) {
+        return userDao.findByEmail(email);
+    }
+
     public List<User> findAll() {
         return userDao.findAll();
     }
@@ -49,5 +53,9 @@ public class UserService {
 
     public boolean deleteById(Long id) {
         return userDao.deleteById(id) > 0;
+    }
+
+    public int countTodayNewUsers() {
+        return userDao.countTodayNewUsers();
     }
 }

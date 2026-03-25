@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>系统日志管理</title>
+    <link rel="stylesheet" href="/css/admin_style.css">
+    <style>
+        .log-container {height: 600px; overflow-y: auto; background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 4px;}
+        .log-info {color: #4ec9b0;}
+        .log-warn {color: #ce9178;}
+        .log-error {color: #f44336;}
+        .log-debug {color: #9cdcfe;}
+        .log-filter {margin-bottom: 15px; display: flex; gap: 10px; align-items: center;}
+        .log-filter select, .log-filter button, .clear-btn {padding: 6px 12px; border-radius: 4px; cursor: pointer;}
+        .clear-btn {background: #f44336; color: white; border: none;}
+        .clear-btn:hover {background: #d32f2f;}
+    </style>
+</head>
+<body>
+<div class="admin-container">
+    <div class="sidebar">
+        <h2>电子商城</h2>
+        <a href="/admin">首页</a>
+        <a href="/admin/products">商品管理</a>
+        <a href="/admin/categories">分类管理</a>
+        <a href="/admin/orders">订单管理</a>
+        <a href="/admin/users">用户管理</a>
+        <a href="/">返回前台</a>
+        <a href="/admin/logs" class="active">系统日志</a>
+        <a href="/logout">退出登录</a>
+    </div>
+
+    <div class="main-content">
+        <div class="admin-header">
+            <h1>系统日志管理</h1>
+        </div>
+
+        <!-- 日志筛选 + 清空按钮 -->
+        <div class="log-filter">
+            <form action="/admin/logs" method="get" style="display: flex; gap: 10px;">
+
+                <select name="fileName" onchange="this.form.submit()">
+                    <option th:each="file : ${allLogFiles}"
+                            th:value="${file}"
+                            th:selected="${file == currentFileName}">
+                        [[${file}]]
+                    </option>
+                </select>
+
+                <select name="level">
+                    <option value="">全部级别</option>
+                    <option value="INFO" th:selected="${currentLevel=='INFO'}">INFO</option>
+                    <option value="WARN" th:selected="${currentLevel=='WARN'}">WARN</option>
+                    <option value="ERROR" th:selected="${currentLevel=='ERROR'}">ERROR</option>
+                    <option value="DEBUG" th:selected="${currentLevel=='DEBUG'}">DEBUG</option>
+                </select>
+                <button type="submit" class="btn">筛选</button>
+            </form>
+            <!-- 清空日志按钮 -->
+            <button class="clear-btn" onclick="clearLogs()">清空数据库日志表</button>
+        </div>
+
+        <!-- 实时运行日志 -->
+        <div class="form-container">
+            <h3>实时运行日志：[[${currentFileName}]]</h3>
+            <div class="log-container">
+                <div th:each="log : ${realTimeLogs}">
+                    <span th:class="${log.contains('ERROR') ? 'log-error' :
+                                      log.contains('WARN') ? 'log-warn' :
+                                      log.contains('DEBUG') ? 'log-debug' : 'log-info'}"
+                          th:text="${log}"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作审计（数据库）日志 -->
+        <div class="form-container" style="margin-top: 20px;">
+            <h3>操作审计日志</h3>
+            <div class="admin-table">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>级别</th>
+                        <th>时间</th>
+                        <th>用户</th>
+                        <th>请求URL</th>
+                        <th>类/方法</th>
+                        <th>内容</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="log : ${operateLogs}">
+                        <td th:text="${log.logLevel}" th:class="${log.logLevel=='ERROR'?'log-error':log.logLevel=='WARN'?'log-warn':'log-info'}"></td>
+                        <td th:text="${#temporals.format(log.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <td th:text="${log.username}"></td>
+                        <td th:text="${log.requestUrl}"></td>
+                        <td th:text="${log.className.substring(0,20)+'.../'+log.methodName}"></td>
+                        <td th:text="${log.logContent}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 清空日志JS确认逻辑 -->
+<script>
+    function clearLogs() {
+        if(confirm("⚠️ 确认清空所有日志吗？此操作不可恢复！")){
+            window.location.href = "/admin/logs/clear";
+        }
+    }
+</script>
+</body>
+</html>

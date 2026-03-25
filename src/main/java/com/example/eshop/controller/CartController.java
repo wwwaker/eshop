@@ -1,6 +1,7 @@
 package com.example.eshop.controller;
 
 import com.example.eshop.entity.CartItem;
+import com.example.eshop.entity.Product;
 import com.example.eshop.entity.User;
 import com.example.eshop.service.CartService;
 import com.example.eshop.util.AuthUtil;
@@ -13,13 +14,41 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class CartController {
 
     @Autowired
     private CartService cartService;
+
+
+    private boolean checkImageExists(String imageUrl) {
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            return false;
+        }
+        String imagePath = imageUrl;
+        if (imagePath.startsWith("/")) {
+            imagePath = imagePath.substring(1);
+        }
+        Path path = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "static", imagePath);
+        return Files.exists(path);
+    }
+
+    private Map<Long, Boolean> buildImageExistsMap(List<CartItem> cartItems) {
+        Map<Long, Boolean> imageExistsMap = new HashMap<>();
+        for (CartItem item : cartItems) {
+            if (item.getProduct() != null) {
+                imageExistsMap.put(item.getProduct().getId(), checkImageExists(item.getProduct().getImageUrl()));
+            }
+        }
+        return imageExistsMap;
+    }
 
     @GetMapping("/cart")
     public String cart(HttpSession session, Model model) {
@@ -31,8 +60,11 @@ public class CartController {
         List<CartItem> cartItems = cartService.findByUserId(user.getId());
         BigDecimal total = cartService.getCartTotal(user.getId());
 
+        Map<Long, Boolean> imageExistsMap = buildImageExistsMap(cartItems);
+
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("total", total);
+        model.addAttribute("imageExistsMap", imageExistsMap);
         return "cart/cart";
     }
 

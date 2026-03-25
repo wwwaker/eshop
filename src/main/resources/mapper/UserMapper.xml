@@ -23,6 +23,10 @@
         SELECT * FROM users WHERE username = #{username}
     </select>
 
+    <select id="findByEmail" resultMap="BaseResultMap">
+        SELECT * FROM users WHERE email = #{email}
+    </select>
+
     <select id="findAll" resultMap="BaseResultMap">
         SELECT * FROM users
     </select>
@@ -46,5 +50,11 @@
     <delete id="deleteById">
         DELETE FROM users WHERE id = #{id}
     </delete>
+
+    <select id="countTodayNewUsers" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE DATE(created_at) = CURDATE()
+    </select>
 
 </mapper>

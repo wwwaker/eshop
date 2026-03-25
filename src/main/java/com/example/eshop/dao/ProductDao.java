@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ProductDao {
@@ -19,6 +20,8 @@ public interface ProductDao {
 
     List<Product> searchByName(String keyword);
 
+    List<String> searchSuggestions(String keyword);
+
     int insert(Product product);
 
     int update(Product product);
@@ -26,4 +29,10 @@ public interface ProductDao {
     int decreaseStock(@Param("id") Long id, @Param("quantity") Integer quantity);
 
     int deleteById(Long id);
+    
+    int countTodayNewProducts();
+    
+    List<Map<String, Object>> getSalesTrend(@Param("days") int days);
+    
+    List<Map<String, Object>> getHotProducts(@Param("limit") int limit);
 }

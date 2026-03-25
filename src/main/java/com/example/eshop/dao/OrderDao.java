@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface OrderDao {
@@ -22,4 +23,12 @@ public interface OrderDao {
     int updateStatus(@Param("id") Long id, @Param("status") String status);
 
     int deleteById(Long id);
+    
+    int countTodayOrders();
+    
+    Map<String, Object> getTodaySales();
+    
+    int countTodayNewUsers();
+    
+    Map<String, Object> getUserActivityStats();
 }

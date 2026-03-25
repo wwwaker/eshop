@@ -37,7 +37,9 @@
                                         <span th:unless="${item.product.imageUrl != null and item.product.imageUrl != '' and imageExistsMap[item.product.id]}" 
                                               style="color: #999; font-size: 12px;">无图</span>
                                     </div>
-                                    <span th:text="${item.product.name}">商品名称</span>
+                                    <a th:href="'/product?id=' + ${item.product.id}" class="product-link">
+                                        <span th:text="${item.product.name}">商品名称</span>
+                                    </a>
                                 </div>
                             </td>
                             <td th:text="'¥' + ${item.product.price}">¥0.00</td>

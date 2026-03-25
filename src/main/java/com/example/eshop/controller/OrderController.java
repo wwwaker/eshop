@@ -3,6 +3,7 @@ package com.example.eshop.controller;
 import com.example.eshop.entity.Order;
 import com.example.eshop.entity.User;
 import com.example.eshop.service.CartService;
+import com.example.eshop.service.CategoryService;
 import com.example.eshop.service.OrderService;
 import com.example.eshop.util.AuthUtil;
 import jakarta.servlet.http.HttpSession;
@@ -27,6 +28,9 @@ public class OrderController {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     @GetMapping("/order/confirm")
     public String confirmOrder(HttpSession session, Model model) {
         User user = AuthUtil.getCurrentUser(session);
@@ -41,6 +45,7 @@ public class OrderController {
         model.addAttribute("user", user);
         model.addAttribute("cartItems", cartService.findByUserId(user.getId()));
         model.addAttribute("total", cartService.getCartTotal(user.getId()));
+        model.addAttribute("categories", categoryService.findAll());
         return "order/order-confirm";
     }
 
@@ -89,6 +94,7 @@ public class OrderController {
         log.info("{}",disablePayBtn);
 
         model.addAttribute("order", order);
+        model.addAttribute("categories", categoryService.findAll());
         return "order/order-detail";
     }
 
@@ -101,6 +107,7 @@ public class OrderController {
 
         List<Order> orders = orderService.findByUserId(user.getId());
         model.addAttribute("orders", orders);
+        model.addAttribute("categories", categoryService.findAll());
         return "order/order-list";
     }
 

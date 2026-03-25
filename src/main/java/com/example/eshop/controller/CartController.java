@@ -4,6 +4,7 @@ import com.example.eshop.entity.CartItem;
 import com.example.eshop.entity.Product;
 import com.example.eshop.entity.User;
 import com.example.eshop.service.CartService;
+import com.example.eshop.service.CategoryService;
 import com.example.eshop.util.AuthUtil;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+    @Autowired
+    private CategoryService categoryService;
 
 
     private boolean checkImageExists(String imageUrl) {
@@ -65,6 +68,7 @@ public class CartController {
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("total", total);
         model.addAttribute("imageExistsMap", imageExistsMap);
+        model.addAttribute("categories", categoryService.findAll());
         return "cart/cart";
     }
 

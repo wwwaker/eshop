@@ -1,6 +1,7 @@
 package com.example.eshop.controller;
 
 import com.example.eshop.entity.User;
+import com.example.eshop.service.CategoryService;
 import com.example.eshop.service.UserService;
 import com.example.eshop.util.AuthUtil;
 import jakarta.servlet.http.HttpSession;
@@ -17,8 +18,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     @GetMapping("/login")
-    public String loginPage() {
+    public String loginPage(Model model) {
+        model.addAttribute("categories", categoryService.findAll());
         return "auth/login";
     }
 
@@ -38,7 +43,8 @@ public class UserController {
     }
 
     @GetMapping("/register")
-    public String registerPage() {
+    public String registerPage(Model model) {
+        model.addAttribute("categories", categoryService.findAll());
         return "auth/register";
     }
 
@@ -92,6 +98,7 @@ public class UserController {
             return "redirect:/login";
         }
         model.addAttribute("user", user);
+        model.addAttribute("categories", categoryService.findAll());
         return "user/profile";
     }
 

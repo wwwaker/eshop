@@ -97,6 +97,7 @@ public class HomeController {
         
         model.addAttribute("product", product);
         model.addAttribute("imageExists", imageExists);
+        model.addAttribute("categories", categoryService.findAll());
         return "product/product-detail";
     }
     @GetMapping("/api/search-suggestions")

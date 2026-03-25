@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CartService {
@@ -34,15 +36,18 @@ public class CartService {
     @Transactional
     public boolean addToCart(Long userId, Long productId, Integer quantity) {
         Product product = productDao.findById(productId);
+        //检验库存
         if (product == null || product.getStock() < quantity) {
             return false;
         }
 
+        // 如果购物车中已经存在该商品，则更新数量
         CartItem existingItem = cartItemDao.findByUserIdAndProductId(userId, productId);
         if (existingItem != null) {
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
             return cartItemDao.updateQuantity(existingItem) > 0;
         } else {
+            // 否则插入新的
             CartItem cartItem = new CartItem();
             cartItem.setUserId(userId);
             cartItem.setProductId(productId);
@@ -78,4 +83,5 @@ public class CartService {
         }
         return total;
     }
+
 }

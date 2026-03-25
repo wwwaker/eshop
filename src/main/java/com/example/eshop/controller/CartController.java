@@ -1,5 +1,6 @@
 package com.example.eshop.controller;
 
+import com.example.eshop.dao.ProductDao;
 import com.example.eshop.entity.CartItem;
 import com.example.eshop.entity.Product;
 import com.example.eshop.entity.User;
@@ -12,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -26,6 +28,7 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+    private ProductDao productService;
 
 
     private boolean checkImageExists(String imageUrl) {
@@ -62,9 +65,25 @@ public class CartController {
 
         Map<Long, Boolean> imageExistsMap = buildImageExistsMap(cartItems);
 
+        Map<Long, Boolean> stockStatusMap = new HashMap<>();
+        boolean allStockSufficient = true;
+
+        for (CartItem item : cartItems) {
+            if (item.getProduct() != null) {
+                boolean sufficient = item.getQuantity() <= item.getProduct().getStock();
+                stockStatusMap.put(item.getProduct().getId(), sufficient);
+                if (!sufficient) {
+                    allStockSufficient = false;
+                }
+            }
+        }
+
+
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("total", total);
         model.addAttribute("imageExistsMap", imageExistsMap);
+        model.addAttribute("stockStatusMap", stockStatusMap);
+        model.addAttribute("allStockSufficient", allStockSufficient);
         return "cart/cart";
     }
 
@@ -72,16 +91,16 @@ public class CartController {
     public String addToCart(@RequestParam("productId") Long productId,
                             @RequestParam(value = "quantity", defaultValue = "1") Integer quantity,
                             HttpSession session,
-                            Model model) {
+                            RedirectAttributes redirectAttributes) {
         User user = AuthUtil.getCurrentUser(session);
         if (user == null) {
             return "redirect:/login";
         }
 
         if (cartService.addToCart(user.getId(), productId, quantity)) {
-            model.addAttribute("success", "已添加到购物车");
+            redirectAttributes.addFlashAttribute("success", "已添加到购物车");
         } else {
-            model.addAttribute("error", "添加失败，库存不足");
+            redirectAttributes.addFlashAttribute("error", "添加失败，库存不足");
         }
         return "redirect:/cart";
     }

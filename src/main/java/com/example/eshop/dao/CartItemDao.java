@@ -22,4 +22,5 @@ public interface CartItemDao {
     int deleteByUserId(Long userId);
 
     int countByUserId(Long userId);
+
 }

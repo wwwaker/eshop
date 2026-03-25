@@ -79,3 +79,16 @@ CREATE TABLE IF NOT EXISTS order_items (
     subtotal DECIMAL(10, 2) NOT NULL COMMENT '小计金额',
     FOREIGN KEY (order_id) REFERENCES orders(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单详情表';
+
+-- 系统日志表
+CREATE TABLE IF NOT EXISTS sys_logs (
+                                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                        log_level VARCHAR(20) NOT NULL COMMENT '日志级别',
+                                        log_content VARCHAR(500) NOT NULL COMMENT '日志内容',
+                                        create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                        class_name VARCHAR(200) COMMENT '操作类名',
+                                        method_name VARCHAR(100) COMMENT '操作方法',
+                                        request_url VARCHAR(200) COMMENT '请求URL',
+                                        username VARCHAR(50) COMMENT '操作用户',
+                                        ip VARCHAR(50) COMMENT '请求IP'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统日志表';

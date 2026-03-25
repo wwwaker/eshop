@@ -22,7 +22,14 @@
                 </div>
                 <div class="form-group">
                     <label>邮箱</label>
-                    <input type="email" name="email" placeholder="请输入邮箱">
+                    <input type="email" id="email" name="email" required placeholder="请输入邮箱">
+                </div>
+                <div class="form-group">
+                    <label>邮箱验证码</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" name="emailCode" required placeholder="请输入邮箱验证码">
+                        <button type="button" id="sendCodeBtn" class="btn" style="margin-top: 0; white-space: nowrap;">发送验证码</button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>手机号</label>
@@ -43,5 +50,62 @@
         <p>&copy; 2026 电子商城 - 基于 Spring MVC 开发</p>
     </div>
 </footer>
+
+<script>
+    const sendCodeBtn = document.getElementById('sendCodeBtn');
+    const emailInput = document.getElementById('email');
+
+    sendCodeBtn.addEventListener('click', async function () {
+        const email = emailInput.value.trim();
+        if (!email) {
+            alert('请先输入邮箱');
+            emailInput.focus();
+            return;
+        }
+
+        sendCodeBtn.disabled = true;
+        const originalText = sendCodeBtn.textContent;
+        sendCodeBtn.textContent = '发送中...';
+
+        try {
+            const response = await fetch('/register/send-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ email: email })
+            });
+
+            const result = await response.json();
+            alert(result.message);
+
+            if (result.success) {
+                startCountdown(60);
+                return;
+            }
+        } catch (error) {
+            alert('发送失败，请稍后重试');
+        }
+
+        sendCodeBtn.disabled = false;
+        sendCodeBtn.textContent = originalText;
+    });
+
+    function startCountdown(seconds) {
+        let remaining = seconds;
+        sendCodeBtn.textContent = remaining + '秒后重试';
+
+        const timer = setInterval(function () {
+            remaining -= 1;
+            if (remaining <= 0) {
+                clearInterval(timer);
+                sendCodeBtn.disabled = false;
+                sendCodeBtn.textContent = '发送验证码';
+                return;
+            }
+            sendCodeBtn.textContent = remaining + '秒后重试';
+        }, 1000);
+    }
+</script>
 </body>
 </html>

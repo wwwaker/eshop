@@ -17,4 +17,16 @@ spring.thymeleaf.suffix=.html
 spring.thymeleaf.mode=HTML
 spring.thymeleaf.encoding=UTF-8
 
+spring.mail.host=smtp.qq.com
+spring.mail.port=465
+spring.mail.username=your-email@qq.com
+spring.mail.password=your-qq-smtp-auth-code
+spring.mail.default-encoding=UTF-8
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.ssl.enable=true
+spring.mail.properties.mail.smtp.timeout=5000
+spring.mail.properties.mail.smtp.connectiontimeout=5000
+spring.mail.properties.mail.smtp.writetimeout=5000
+
 logging.level.com.example.eshop.dao=debug
+

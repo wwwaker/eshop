@@ -22,6 +22,10 @@ public class UserService {
         return userDao.findByUsername(username);
     }
 
+    public User findByEmail(String email) {
+        return userDao.findByEmail(email);
+    }
+
     public List<User> findAll() {
         return userDao.findAll();
     }

@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class UserController {
@@ -47,6 +48,18 @@ public class UserController {
                            @RequestParam("email") String email,
                            @RequestParam("phone") String phone,
                            Model model) {
+
+        if (email == null || email.trim().isEmpty()) {
+            model.addAttribute("error", "邮箱不能为空");
+            return "auth/register";
+        }
+        
+        if (phone == null || phone.trim().isEmpty()) {
+            model.addAttribute("error", "手机号不能为空");
+            return "auth/register";
+        }
+        
+
         if (userService.findByUsername(username) != null) {
             model.addAttribute("error", "用户名已存在");
             return "auth/register";
@@ -55,8 +68,8 @@ public class UserController {
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-        user.setEmail(email);
-        user.setPhone(phone);
+        user.setEmail(email.trim());
+        user.setPhone(phone.trim());
 
         if (userService.register(user)) {
             return "redirect:/login";
@@ -106,5 +119,45 @@ public class UserController {
             model.addAttribute("error", "更新失败");
         }
         return "user/profile";
+    }
+
+    @GetMapping("/api/user/check-username")
+    @ResponseBody
+    public UserCheckResponse checkUsernameExists(@RequestParam("username") String username) {
+        boolean exists = userService.findByUsername(username) != null;
+        return new UserCheckResponse(exists, exists ? "用户名已存在" : "用户名可用");
+    }
+
+    @GetMapping("/api/user/check-email")
+    @ResponseBody
+    public UserCheckResponse checkEmailExists(@RequestParam("email") String email) {
+        boolean exists = userService.findByEmail(email) != null;
+        return new UserCheckResponse(exists, exists ? "邮箱已存在" : "邮箱可用");
+    }
+
+    public static class UserCheckResponse {
+        private boolean exists;
+        private String message;
+
+        public UserCheckResponse(boolean exists, String message) {
+            this.exists = exists;
+            this.message = message;
+        }
+
+        public boolean isExists() {
+            return exists;
+        }
+
+        public void setExists(boolean exists) {
+            this.exists = exists;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
     }
 }

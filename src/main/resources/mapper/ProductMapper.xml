@@ -126,4 +126,10 @@
         LIMIT #{limit}
     </select>
 
+    <update id="moveToCategory">
+        UPDATE products
+        SET category_id = #{toCategoryId}
+        WHERE category_id = #{fromCategoryId}
+    </update>
+
 </mapper>

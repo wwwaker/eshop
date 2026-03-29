@@ -66,4 +66,7 @@ public class ProductService {
         return productDao.getHotProducts(limit);
     }
 
+    public int moveToCategory(Long fromCategoryId, Long toCategoryId) {
+        return productDao.moveToCategory(fromCategoryId, toCategoryId);
+    }
 }

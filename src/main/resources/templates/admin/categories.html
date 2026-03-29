@@ -46,8 +46,10 @@
                             <td th:text="${category.sortOrder}"></td>
                             <td>
                                 <div class="action-buttons">
+                                    <a th:href="'/admin/category/products?id=' + ${category.id}" class="btn">管理商品</a>
                                     <a th:href="'/admin/category/edit?id=' + ${category.id}" class="btn btn-secondary">编辑</a>
                                     <a th:href="'/admin/category/delete?id=' + ${category.id}" class="btn btn-danger" onclick="return confirm('确定删除吗？')">删除</a>
+                                    <a th:href="'/admin/category/delete?id=' + ${category.id}" class="btn btn-danger" onclick="return confirm('确定删除该分类吗？删除后该分类下的商品将变为未分类状态。')">删除</a>
                                 </div>
                             </td>
                         </tr>

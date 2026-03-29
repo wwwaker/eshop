@@ -140,6 +140,66 @@ function validateForm() {
     return true;
 }
 
+// 发送验证码功能
+function setupSendCode() {
+    const sendCodeBtn = document.getElementById('sendCodeBtn');
+    const emailInput = document.getElementById('email');
+
+    if (sendCodeBtn && emailInput) {
+        sendCodeBtn.addEventListener('click', async function () {
+            const email = emailInput.value.trim();
+            if (!email) {
+                alert('请先输入邮箱');
+                emailInput.focus();
+                return;
+            }
+
+            sendCodeBtn.disabled = true;
+            const originalText = sendCodeBtn.textContent;
+            sendCodeBtn.textContent = '发送中...';
+
+            try {
+                const response = await fetch('/register/send-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({ email: email })
+                });
+
+                const result = await response.json();
+                alert(result.message);
+
+                if (result.success) {
+                    startCountdown(60);
+                    return;
+                }
+            } catch (error) {
+                alert('发送失败，请稍后重试');
+            }
+
+            sendCodeBtn.disabled = false;
+            sendCodeBtn.textContent = originalText;
+        });
+
+        function startCountdown(seconds) {
+            let remaining = seconds;
+            sendCodeBtn.textContent = remaining + '秒后重试';
+
+            const timer = setInterval(function () {
+                remaining -= 1;
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    sendCodeBtn.disabled = false;
+                    sendCodeBtn.textContent = '发送验证码';
+                    return;
+                }
+                sendCodeBtn.textContent = remaining + '秒后重试';
+            }, 1000);
+        }
+    }
+}
+
 // 添加输入事件监听器，实现实时检查
 document.addEventListener('DOMContentLoaded', function() {
     const usernameInput = document.getElementById('username');
@@ -163,4 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
     usernameInput.addEventListener('input', debounce(checkUsername, 500));
     emailInput.addEventListener('input', debounce(checkEmail, 500));
     phoneInput.addEventListener('input', debounce(checkPhone, 500));
+
+    // 设置发送验证码功能
+    setupSendCode();
 });

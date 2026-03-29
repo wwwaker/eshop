@@ -24,6 +24,9 @@ public class UserController {
     private MailService mailService;
 
     @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
     private EmailCodeService emailCodeService;
 
     @GetMapping("/login")

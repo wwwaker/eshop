@@ -109,9 +109,40 @@ body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f5f5; }
 }
 
 /* Search */
-.search-container { position: relative;display: inline-block;}
-.search-suggestions { position: absolute; top: 100%; left: 0; right: 0; background-color: #2e899e; border: 1px solid #ddd; border-top: none;
-    max-height: 200px; overflow-y: auto; z-index: 9999; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-size: 14px;}
-.search-suggestions div { padding: 10px 15px; cursor: pointer; transition: background-color 0.2s;}
-.search-suggestions div:hover { background-color: rgba(137, 15, 15, 0.84);}
-.search-suggestions div:first-child { border-top: none;}
+.search-container {
+    position: relative;
+    display: inline-block;
+}
+.search-box {
+    display: flex;
+    align-items: center;
+}
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 300px;
+    background-color: #4562df;
+    border: 1px solid #ddd;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10001;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    font-size: 14px;
+    color: #333;
+    display: none;
+    margin-top: 2px;
+}
+.search-suggestions div {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid #f0f0f0;
+}
+.search-suggestions div:hover {
+    background-color: #ca1414;
+}
+.search-suggestions div:first-child {
+    border-bottom: none;
+}

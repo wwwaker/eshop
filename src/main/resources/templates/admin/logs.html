@@ -4,17 +4,6 @@
     <meta charset="UTF-8">
     <title>系统日志管理</title>
     <link rel="stylesheet" href="/css/admin_style.css">
-    <style>
-        .log-container {height: 600px; overflow-y: auto; background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 4px;}
-        .log-info {color: #4ec9b0;}
-        .log-warn {color: #ce9178;}
-        .log-error {color: #f44336;}
-        .log-debug {color: #9cdcfe;}
-        .log-filter {margin-bottom: 15px; display: flex; gap: 10px; align-items: center;}
-        .log-filter select, .log-filter button, .clear-btn {padding: 6px 12px; border-radius: 4px; cursor: pointer;}
-        .clear-btn {background: #f44336; color: white; border: none;}
-        .clear-btn:hover {background: #d32f2f;}
-    </style>
 </head>
 <body>
 <div class="admin-container">
@@ -104,13 +93,6 @@
     </div>
 </div>
 
-<!-- 清空日志JS确认逻辑 -->
-<script>
-    function clearLogs() {
-        if(confirm("⚠️ 确认清空所有日志吗？此操作不可恢复！")){
-            window.location.href = "/admin/logs/clear";
-        }
-    }
-</script>
+<script src="/js/admin_logs.js"></script>
 </body>
 </html>

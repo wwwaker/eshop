@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM加载完成，初始化搜索建议功能');
 
@@ -67,14 +68,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         console.log('显示建议容器');
-        suggestionsContainer.style.display = 'block';
+        suggestionsContainer.classList.add('show');
         console.log('建议容器显示状态:', suggestionsContainer.style.display);
     }
 
     // 隐藏建议
     function hideSuggestions() {
         console.log('隐藏建议容器');
-        suggestionsContainer.style.display = 'none';
+        suggestionsContainer.classList.remove('show');
     }
 
     // 点击页面其他地方时隐藏建议

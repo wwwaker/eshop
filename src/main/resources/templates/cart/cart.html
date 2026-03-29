@@ -7,7 +7,15 @@
     <main class="main">
         <div class="container">
             <h2 style="margin-bottom: 20px;">购物车</h2>
-            
+
+            <!-- 添加成功/失败消息提示 -->
+            <div th:if="${success}"
+                 style="background: #d4edda; color: #155724; padding: 12px; border-radius: 4px; margin-bottom: 20px;"
+                 th:text="${success}"></div>
+            <div th:if="${error}"
+                 style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 4px; margin-bottom: 20px;"
+                 th:text="${error}"></div>
+
             <div th:if="${#lists.isEmpty(cartItems)}" style="text-align: center; padding: 50px; background: white; border-radius: 8px;">
                 <p style="color: #999; margin-bottom: 20px;">购物车是空的</p>
                 <a href="/" class="btn">去购物</a>
@@ -49,6 +57,11 @@
                                     <input type="number" name="quantity" th:value="${item.quantity}" min="0" class="quantity-input">
                                     <button type="submit" class="btn btn-secondary" style="margin: 0;">更新</button>
                                 </form>
+                                <!-- 库存不足提示 -->
+                                <div th:if="${item.quantity > item.product.stock}"
+                                     style="color: #f44336; font-size: 12px; margin-top: 5px;">
+                                    ⚠️ 库存不足（剩余：<span th:text="${item.product.stock}">0</span>）
+                                </div>
                             </td>
                             <td th:text="'¥' + ${item.subtotal}">¥0.00</td>
                             <td>
@@ -61,10 +74,26 @@
                 <div class="cart-total">
                     总计: <span style="color: #ff6700; font-size: 24px;" th:text="'¥' + ${total}">¥0.00</span>
                 </div>
-                
+
+                <!-- 库存不足时显示警告 -->
+                <div th:if="${!allStockSufficient}"
+                     style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #ffc107;">
+                    ⚠️ 部分商品库存不足，请调整购买数量后再结算
+                </div>
+
                 <div style="text-align: right; margin-top: 20px;">
                     <a href="/cart/clear" class="btn btn-secondary">清空购物车</a>
-                    <a href="/order/confirm" class="btn" style="margin-left: 10px;">去结算</a>
+                    <!-- 库存充足时显示正常链接 -->
+                    <a th:if="${allStockSufficient}"
+                       href="/order/confirm"
+                       class="btn"
+                       style="margin-left: 10px;">去结算</a>
+                    <!-- 库存不足时显示禁用按钮 -->
+                    <button th:if="${!allStockSufficient}"
+                            disabled
+                            style="margin-left: 10px; padding: 10px 30px; background: #cccccc; color: #666666; border: none; border-radius: 4px; cursor: not-allowed;">
+                        去结算
+                    </button>
                 </div>
             </div>
         </div>

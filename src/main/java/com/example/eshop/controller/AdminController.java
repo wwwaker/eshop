@@ -204,6 +204,36 @@ public class AdminController {
         return "redirect:/admin/categories";
     }
 
+
+    @GetMapping("/category/edit")
+    public String editCategoryPage(@RequestParam("id") Long id, Model model) {
+        Category category = categoryService.findById(id);
+        model.addAttribute("category", category);
+        return "admin/category-form";
+    }
+    @GetMapping("/category/products")
+    public String categoryProducts(@RequestParam("id") Long categoryId, Model model) {
+        Category category = categoryService.findById(categoryId);
+        List<Product> products = productService.findByCategoryId(categoryId);
+        model.addAttribute("category", category);
+        model.addAttribute("products", products);
+        model.addAttribute("categories", categoryService.findAll());
+        return "admin/category-products";
+    }
+
+    @PostMapping("/category/moveProducts")
+    public String moveProducts(@RequestParam("fromCategoryId") Long fromCategoryId,
+                               @RequestParam("toCategoryId") Long toCategoryId,
+                               Model model) {
+        if (fromCategoryId.equals(toCategoryId)) {
+            model.addAttribute("error", "源分类和目标分类不能相同");
+            return "redirect:/admin/category/products?id=" + fromCategoryId;
+        }
+        int count = productService.moveToCategory(fromCategoryId, toCategoryId);
+        dashboardCache.clear();
+        return "redirect:/admin/category/products?id=" + toCategoryId;
+    }
+
     @GetMapping("/category/delete")
     public String deleteCategory(@RequestParam("id") Long id) {
         categoryService.deleteById(id);

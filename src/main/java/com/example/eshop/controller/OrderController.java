@@ -68,7 +68,7 @@ public class OrderController {
                 model.addAttribute("error", "创建订单失败，购物车为空");
                 return "redirect:/cart";
             }
-        } catch (Exception e) {
+        } catch (Exception e) {//异常的根源在OrderService
             model.addAttribute("error", e.getMessage());
             return "redirect:/cart";
         }

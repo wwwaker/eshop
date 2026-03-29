@@ -2,6 +2,8 @@ package com.example.eshop.controller;
 
 import com.example.eshop.entity.User;
 import com.example.eshop.service.CategoryService;
+import com.example.eshop.service.EmailCodeService;
+import com.example.eshop.service.MailService;
 import com.example.eshop.service.UserService;
 import com.example.eshop.util.AuthUtil;
 import jakarta.servlet.http.HttpSession;
@@ -19,7 +21,10 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private CategoryService categoryService;
+    private MailService mailService;
+
+    @Autowired
+    private EmailCodeService emailCodeService;
 
     @GetMapping("/login")
     public String loginPage(Model model) {
@@ -48,11 +53,37 @@ public class UserController {
         return "auth/register";
     }
 
+    @PostMapping("/register/send-code")
+    @ResponseBody
+    public String sendRegisterCode(@RequestParam("email") String email,
+                                   HttpSession session) {
+        if (email == null || email.trim().isEmpty()) {
+            return "{\"success\": false, \"message\": \"邮箱不能为空\"}";
+        }
+
+        String normalizedEmail = email.trim();
+        String code = emailCodeService.generateCode();
+        emailCodeService.saveCode(session, normalizedEmail, code);
+
+        String content = "您的注册验证码是：" + code + "，"
+                + emailCodeService.getExpireMinutes() + "分钟内有效。";
+
+        try {
+            mailService.sendTextMail(normalizedEmail, "EShop 注册验证码", content);
+            return "{\"success\": true, \"message\": \"验证码已发送，请查收邮箱\"}";
+        } catch (Exception e) {
+            emailCodeService.clearCode(session);
+            return "{\"success\": false, \"message\": \"验证码发送失败，请稍后重试\"}";
+        }
+    }
+
     @PostMapping("/register")
     public String register(@RequestParam("username") String username,
                            @RequestParam("password") String password,
                            @RequestParam("email") String email,
+                           @RequestParam("emailCode") String emailCode,
                            @RequestParam("phone") String phone,
+                           HttpSession session,
                            Model model) {
 
         if (email == null || email.trim().isEmpty()) {
@@ -71,13 +102,30 @@ public class UserController {
             return "auth/register";
         }
 
+        if (email == null || email.trim().isEmpty()) {
+            model.addAttribute("error", "邮箱不能为空");
+            return "auth/register";
+        }
+
+        if (emailCode == null || emailCode.trim().isEmpty()) {
+            model.addAttribute("error", "请输入邮箱验证码");
+            return "auth/register";
+        }
+
+        String normalizedEmail = email.trim();
+        if (!emailCodeService.verifyCode(session, normalizedEmail, emailCode.trim())) {
+            model.addAttribute("error", "邮箱验证码错误或已过期");
+            return "auth/register";
+        }
+
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-        user.setEmail(email.trim());
-        user.setPhone(phone.trim());
+        user.setEmail(normalizedEmail);
+        user.setPhone(phone);
 
         if (userService.register(user)) {
+            emailCodeService.clearCode(session);
             return "redirect:/login";
         } else {
             model.addAttribute("error", "注册失败");
@@ -117,7 +165,6 @@ public class UserController {
         user.setPhone(phone);
         user.setAddress(address);
         session.setAttribute("user", user);
-
 
         if (userService.update(user)) {
             model.addAttribute("user", user);

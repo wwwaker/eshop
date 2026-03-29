@@ -28,6 +28,8 @@ public interface ProductDao {
 
     int decreaseStock(@Param("id") Long id, @Param("quantity") Integer quantity);
 
+    int increaseStock(@Param("id") Long id, @Param("quantity") Integer quantity);
+
     int deleteById(Long id);
     
     int countTodayNewProducts();
@@ -35,4 +37,7 @@ public interface ProductDao {
     List<Map<String, Object>> getSalesTrend(@Param("days") int days);
     
     List<Map<String, Object>> getHotProducts(@Param("limit") int limit);
+
+    int moveToCategory(@Param("fromCategoryId") Long fromCategoryId, @Param("toCategoryId") Long toCategoryId);
+
 }

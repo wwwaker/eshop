@@ -4,17 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title} + ' - 电子商城'">电子商城</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .search-container {
+            position: relative;
+            display: inline-block;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+        }
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 300px;
+            background-color: #4562df;
+            border: 1px solid #ddd;
+            border-top: none;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10001;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            font-size: 14px;
+            color: #333;
+            display: none;
+            margin-top: 2px;
+        }
+        .search-suggestions div {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .search-suggestions div:hover {
+            background-color: #ca1414;
+        }
+        .search-suggestions div:first-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
 <body>
 <div th:fragment="header">
     <header class="header">
         <div class="container header-content">
             <div class="logo"><a href="/">电子商城</a></div>
-<!--            <form class="search-box" action="/search" method="get">-->
-<!--                <input type="text" name="keyword" placeholder="搜索商品..." th:value="${keyword}">-->
-<!--                <button type="submit">搜索</button>-->
-<!--            </form>-->
+            <!--            <form class="search-box" action="/search" method="get">-->
+            <!--                <input type="text" name="keyword" placeholder="搜索商品..." th:value="${keyword}">-->
+            <!--                <button type="submit">搜索</button>-->
+            <!--            </form>-->
             <div class="search-container">
                 <form class="search-box" action="/search" method="get">
                     <input type="text" id="search-input" name="keyword" placeholder="搜索商品..." th:value="${keyword}">
@@ -36,6 +75,20 @@
                         <a href="/logout">退出</a>
                     </span>
             </nav>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    console.log('DOM 加载完成，搜索功能已初始化');
+
+                    const searchInput = document.getElementById('search-input');
+
+                    if (!searchInput) {
+                        console.error('搜索输入元素未找到');
+                        return;
+                    }
+
+                    console.log('搜索功能已禁用自动建议，只在提交时搜索');
+                });
+            </script>
         </div>
     </header>
     <nav class="nav">
@@ -44,7 +97,94 @@
             <a th:each="cat : ${categories}" th:href="'/category?id=' + ${cat.id}" th:text="${cat.name}"></a>
         </div>
     </nav>
-    <script th:src="@{/js/searchSuggestions.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM加载完成，初始化搜索建议功能');
+
+            const searchInput = document.getElementById('search-input');
+            const suggestionsContainer = document.getElementById('search-suggestions');
+
+            console.log('搜索输入元素:', searchInput);
+            console.log('建议容器元素:', suggestionsContainer);
+
+            let timeoutId;
+
+            // 确保元素存在
+            if (!searchInput || !suggestionsContainer) {
+                console.error('搜索元素未找到');
+                return;
+            }
+
+            // 处理搜索输入
+            searchInput.addEventListener('input', function() {
+                const keyword = this.value.trim();
+                console.log('输入内容:', keyword);
+
+                // 清除之前的定时器
+                clearTimeout(timeoutId);
+
+                if (keyword.length > 0) {
+                    // 延迟500ms发送请求，避免频繁请求
+                    timeoutId = setTimeout(() => {
+                        console.log('发送搜索建议请求:', keyword);
+                        fetch('/api/search-suggestions?keyword=' + encodeURIComponent(keyword))
+                            .then(response => {
+                                console.log('响应状态:', response.status);
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log('搜索建议数据:', data);
+                                displaySuggestions(data);
+                            })
+                            .catch(error => console.error('搜索建议加载失败:', error));
+                    }, 500);
+                } else {
+                    // 清空输入时隐藏建议
+                    hideSuggestions();
+                }
+            });
+
+            // 显示建议
+            function displaySuggestions(suggestions) {
+                console.log('显示搜索建议:', suggestions);
+                if (!Array.isArray(suggestions) || suggestions.length === 0) {
+                    console.log('无搜索建议数据');
+                    hideSuggestions();
+                    return;
+                }
+
+                suggestionsContainer.innerHTML = '';
+
+                suggestions.forEach(suggestion => {
+                    const div = document.createElement('div');
+                    div.textContent = suggestion;
+                    div.addEventListener('click', function() {
+                        // 设置搜索框的值并提交表单
+                        searchInput.value = suggestion;
+                        searchInput.closest('form').submit();
+                    });
+                    suggestionsContainer.appendChild(div);
+                });
+
+                console.log('显示建议容器');
+                suggestionsContainer.classList.add('show');
+                console.log('建议容器显示状态:', suggestionsContainer.style.display);
+            }
+
+            // 隐藏建议
+            function hideSuggestions() {
+                console.log('隐藏建议容器');
+                suggestionsContainer.classList.remove('show');
+            }
+
+            // 点击页面其他地方时隐藏建议
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.search-container')) {
+                    hideSuggestions();
+                }
+            });
+        });
+    </script>
 </div>
 </body>
 </html>

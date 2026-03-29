@@ -85,6 +85,12 @@
         WHERE id = #{id} AND stock >= #{quantity}
     </update>
 
+    <update id="increaseStock">
+        UPDATE products
+        SET stock = stock + #{quantity}
+        WHERE id = #{id}
+    </update>
+
     <delete id="deleteById">
         DELETE FROM products WHERE id = #{id}
     </delete>
@@ -119,5 +125,11 @@
         ORDER BY totalSold DESC
         LIMIT #{limit}
     </select>
+
+    <update id="moveToCategory">
+        UPDATE products
+        SET category_id = #{toCategoryId}
+        WHERE category_id = #{fromCategoryId}
+    </update>
 
 </mapper>

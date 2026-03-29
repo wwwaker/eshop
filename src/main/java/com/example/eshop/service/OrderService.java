@@ -145,7 +145,36 @@ public class OrderService {
         return orderDao.updateStatus(orderId, "COMPLETED") > 0;
     }
 
+    @Transactional
     public boolean cancelOrder(Long orderId) {
+        // 🔍 获取订单信息
+        Order order = orderDao.findById(orderId);
+        if (order == null) {
+            return false;
+        }
+        
+        // 🔍 获取订单项列表
+        List<OrderItem> orderItems = orderItemDao.findByOrderId(orderId);
+        
+        // 🔍 将商品重新添加到购物车
+        for (OrderItem item : orderItems) {
+            CartItem existingItem = cartItemDao.findByUserIdAndProductId(order.getUserId(), item.getProductId());
+            if (existingItem != null) {
+                existingItem.setQuantity(existingItem.getQuantity() + item.getQuantity());
+                cartItemDao.updateQuantity(existingItem);
+            } else {
+                CartItem cartItem = new CartItem();
+                cartItem.setUserId(order.getUserId());
+                cartItem.setProductId(item.getProductId());
+                cartItem.setQuantity(item.getQuantity());
+                cartItemDao.insert(cartItem);
+            }
+            
+            // 🔍 恢复库存
+            productDao.increaseStock(item.getProductId(), item.getQuantity());
+        }
+        
+        // 更新订单状态为已取消
         return orderDao.updateStatus(orderId, "CANCELLED") > 0;
     }
 

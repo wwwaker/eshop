@@ -24,6 +24,7 @@
         FROM cart_items ci 
         JOIN products p ON ci.product_id = p.id 
         WHERE ci.user_id = #{userId}
+        ORDER BY ci.created_at ASC
     </select>
 
     <select id="findByUserIdAndProductId" resultType="com.example.eshop.entity.CartItem">

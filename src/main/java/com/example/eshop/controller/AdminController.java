@@ -8,6 +8,9 @@ import com.example.eshop.service.CategoryService;
 import com.example.eshop.service.OrderService;
 import com.example.eshop.service.ProductService;
 import com.example.eshop.service.UserService;
+import com.example.eshop.util.AuthUtil;
+import com.example.eshop.util.PasswordUtil;
+import jakarta.servlet.http.HttpSession;
 import org.apache.ibatis.ognl.internal.entry.CacheEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -253,6 +256,87 @@ public class AdminController {
         userService.deleteById(id);
         dashboardCache.clear();
         return "redirect:/admin/users";
+    }
+
+    @GetMapping("/user/edit")
+    public String editUserPage(@RequestParam("id") Long id, Model model) {
+        User user = userService.findById(id);
+        if (user == null) {
+            model.addAttribute("error", "用户不存在");
+            return "redirect:/admin/users";
+        }
+
+        List<Order> orders = orderService.findByUserId(id);
+        int totalOrders = orders.size();
+        BigDecimal totalSpent = orders.stream()
+                .filter(o -> "PAID".equals(o.getStatus()) || "SHIPPED".equals(o.getStatus()) || "COMPLETED".equals(o.getStatus()))
+                .map(Order::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        model.addAttribute("user", user);
+        model.addAttribute("orders", orders);
+        model.addAttribute("totalOrders", totalOrders);
+        model.addAttribute("totalSpent", totalSpent);
+        return "admin/user-form";
+    }
+
+    @PostMapping("/user/save")
+    public String saveUser(@RequestParam(value = "id", required = false) Long id,
+                           @RequestParam("username") String username,
+                           @RequestParam("email") String email,
+                           @RequestParam(value = "phone", required = false) String phone,
+                           @RequestParam(value = "address", required = false) String address,
+                           @RequestParam("role") String role,
+                           @RequestParam(value = "password", required = false) String password,
+                           Model model) {
+
+        User existingUser = userService.findByUsername(username);
+        if (existingUser != null && (id == null || !existingUser.getId().equals(id))) {
+            model.addAttribute("error", "用户名已存在");
+            User user = userService.findById(id);
+            model.addAttribute("user", user);
+            model.addAttribute("orders", orderService.findByUserId(id));
+            return "admin/user-form";
+        }
+
+        User user = userService.findById(id);
+        if (user == null) {
+            model.addAttribute("error", "用户不存在");
+            return "admin/user-form";
+        }
+
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPhone(phone);
+        user.setAddress(address);
+        user.setRole(role);
+
+        if (password != null && !password.trim().isEmpty()) {
+            user.setPassword(PasswordUtil.encrypt(password));
+        }
+
+        userService.update(user);
+        dashboardCache.clear();
+        return "redirect:/admin/users";
+    }
+
+    @GetMapping("/user/orders")
+    public String viewUserOrders(@RequestParam("id") Long userId, HttpSession session, Model model) {
+        User currentUser = AuthUtil.getCurrentUser(session);
+        if (currentUser == null || !"ADMIN".equals(currentUser.getRole())) {
+            return "redirect:/login";
+        }
+
+        User targetUser = userService.findById(userId);
+        if (targetUser == null) {
+            model.addAttribute("error", "用户不存在");
+            return "redirect:/admin/users";
+        }
+
+        List<Order> orders = orderService.findByUserId(userId);
+        model.addAttribute("orders", orders);
+        model.addAttribute("viewingUser", targetUser);
+        return "order/order-list";
     }
 
     private static class CacheEntry {

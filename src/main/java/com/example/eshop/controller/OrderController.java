@@ -109,7 +109,7 @@ public class OrderController {
         List<Order> orders = orderService.findByUserId(user.getId());
         model.addAttribute("orders", orders);
         model.addAttribute("categories", categoryService.findAll());
-        return "order/order-list";
+        return "order/user-order-list";
     }
 
     @PostMapping("/order/pay")
@@ -133,4 +133,5 @@ public class OrderController {
         orderService.cancelOrder(orderId);
         return "redirect:/order/list";
     }
+
 }

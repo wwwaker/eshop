@@ -8,8 +8,8 @@
         <div class="container">
             <h2 style="margin-bottom: 20px;">订单预览</h2>
             
-            <div th:if="${#lists.isEmpty(orders)}" style="text-align: center; padding: 50px; background: white; border-radius: 8px;">
-                <p style="color: #999; margin-bottom: 20px;">暂无订单</p>
+            <div th:if="${#lists.isEmpty(orders)}" class="empty-state">
+                <p>暂无订单</p>
                 <a href="/" class="btn">去购物</a>
             </div>
             
@@ -32,17 +32,17 @@
                         </div>
                     </div>
                     
-                    <div th:each="item : ${order.items}" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
+                    <div th:each="item : ${order.items}" class="order-item-content">
                         <span th:text="${item.productName}">商品名称</span>
                         <span th:text="'¥' + ${item.productPrice} + ' x ' + ${item.quantity}">¥0.00 x 1</span>
                     </div>
                     
-                    <div style="text-align: right; margin-top: 15px;">
+                    <div class="order-total">
                         <span>订单总额: </span>
-                        <span style="color: #ff6700; font-size: 18px; font-weight: bold;" th:text="'¥' + ${order.totalAmount}">¥0.00</span>
+                        <span class="order-total-amount" th:text="'¥' + ${order.totalAmount}">¥0.00</span>
                     </div>
                     
-                    <div style="text-align: right; margin-top: 15px;">
+                    <div class="order-actions">
                         <a th:href="'/order/detail?orderNo=' + ${order.orderNo}" class="btn btn-secondary">查看详情</a>
                     </div>
                 </div>

@@ -108,6 +108,160 @@ body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f5f5; }
     .cart-table th, .cart-table td { padding: 10px; }
 }
 
+/* Common Card Styles */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+/* Product Detail */
+.product-detail {
+    display: flex;
+    gap: 40px;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.product-detail-image {
+    flex: 1;
+}
+
+.product-detail-image .image-container {
+    width: 100%;
+    height: 400px;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    border-radius: 8px;
+}
+
+.product-detail-image .image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.product-detail-info {
+    flex: 1;
+}
+
+.product-detail-info h1 {
+    margin-bottom: 20px;
+}
+
+.product-detail-info p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.product-price-large {
+    font-size: 32px;
+    color: #ff6700;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.product-meta {
+    margin-bottom: 20px;
+}
+
+.product-meta span {
+    color: #999;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.quantity-control input {
+    width: 80px;
+    padding: 8px;
+}
+
+/* Messages */
+.message {
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.message-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.message-error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.message-warning {
+    background: #fff3cd;
+    color: #856404;
+    padding: 15px;
+    border-left: 4px solid #ffc107;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 50px;
+    background: white;
+    border-radius: 8px;
+}
+
+.empty-state p {
+    color: #999;
+    margin-bottom: 20px;
+}
+
+/* Order Item */
+.order-item-content {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.order-total {
+    text-align: right;
+    margin-top: 15px;
+}
+
+.order-total-amount {
+    color: #ff6700;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.order-actions {
+    text-align: right;
+    margin-top: 15px;
+}
+
+/* Form Styles */
+.form-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.form-card h3 {
+    margin-bottom: 15px;
+}
+
 /* Search */
 .search-container {
     position: relative;

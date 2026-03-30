@@ -8,8 +8,8 @@
         <div class="container">
             <h2 style="margin-bottom: 20px;">订单详情</h2>
             
-            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+            <div class="card">
+                <div class="order-header">
                     <div>
                         <p><strong>订单编号:</strong> <span th:text="${order.orderNo}"></span></p>
                         <p><strong>下单时间:</strong> <span th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
@@ -26,14 +26,14 @@
                     </div>
                 </div>
                 
-                <h3 style="margin-bottom: 15px;">收货信息</h3>
+                <h3>收货信息</h3>
                 <p><strong>收货人:</strong> <span th:text="${order.receiverName}"></span></p>
                 <p><strong>联系电话:</strong> <span th:text="${order.receiverPhone}"></span></p>
                 <p><strong>收货地址:</strong> <span th:text="${order.receiverAddress}"></span></p>
             </div>
             
-            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                <h3 style="margin-bottom: 15px;">商品清单</h3>
+            <div class="card">
+                <h3>商品清单</h3>
                 <table class="cart-table">
                     <thead>
                         <tr>
@@ -53,8 +53,8 @@
                     </tbody>
                 </table>
                 
-                <div style="text-align: right; margin-top: 20px; font-size: 18px;">
-                    订单总额: <span style="color: #ff6700; font-size: 24px; font-weight: bold;" th:text="'¥' + ${order.totalAmount}">¥0.00</span>
+                <div class="order-total">
+                    订单总额: <span class="order-total-amount" th:text="'¥' + ${order.totalAmount}">¥0.00</span>
                 </div>
             </div>
             

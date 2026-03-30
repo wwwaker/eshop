@@ -11,8 +11,11 @@ import java.util.Map;
 @Service
 public class ProductService {
 
-    @Autowired
-    private ProductDao productDao;
+    private final ProductDao productDao;
+
+    public ProductService(ProductDao productDao) {
+        this.productDao = productDao;
+    }
 
     public Product findById(Long id) {
         return productDao.findById(id);

@@ -22,14 +22,15 @@ import java.util.List;
 public class OrderController {
 
     private static final Logger log = LoggerFactory.getLogger(OrderController.class);
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
+    private final CartService cartService;
+    private final CategoryService categoryService;
 
-    @Autowired
-    private CartService cartService;
-
-    @Autowired
-    private CategoryService categoryService;
+    public OrderController(OrderService orderService, CartService cartService, CategoryService categoryService) {
+        this.orderService = orderService;
+        this.cartService = cartService;
+        this.categoryService = categoryService;
+    }
 
     @GetMapping("/order/confirm")
     public String confirmOrder(HttpSession session, Model model) {

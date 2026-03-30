@@ -16,11 +16,13 @@ import java.util.Map;
 @Service
 public class CartService {
 
-    @Autowired
-    private CartItemDao cartItemDao;
+    private final CartItemDao cartItemDao;
+    private final ProductDao productDao;
 
-    @Autowired
-    private ProductDao productDao;
+    public CartService(CartItemDao cartItemDao, ProductDao productDao) {
+        this.cartItemDao = cartItemDao;
+        this.productDao = productDao;
+    }
 
     public List<CartItem> findByUserId(Long userId) {
         List<CartItem> items = cartItemDao.findByUserId(userId);

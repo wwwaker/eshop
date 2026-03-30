@@ -21,11 +21,14 @@ import java.util.Map;
 
 @Controller
 public class HomeController {
-    @Autowired
-    private ProductService productService;
 
-    @Autowired
-    private CategoryService categoryService;
+    private final ProductService productService;
+    private final CategoryService categoryService;
+
+    public HomeController(ProductService productService, CategoryService categoryService) {
+        this.productService = productService;
+        this.categoryService = categoryService;
+    }
 
     // 辅助方法：检查单个商品图片是否存在
     private boolean checkImageExists(String imageUrl) {

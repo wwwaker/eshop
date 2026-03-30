@@ -17,8 +17,12 @@ import java.io.File;
 @Service
 @Slf4j
 public class SysLogService {
-    @Autowired
-    private SysLogDao sysLogDao;
+
+    private final SysLogDao sysLogDao;
+
+    public SysLogService(SysLogDao sysLogDao) {
+        this.sysLogDao = sysLogDao;
+    }
 
 //    private static final String LOG_FILE_PATH = System.getProperty("user.dir") + "/logs/eshop.log";
     private static final String LOG_DIR = System.getProperty("user.dir") + "/logs/";

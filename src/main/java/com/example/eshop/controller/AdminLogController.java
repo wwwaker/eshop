@@ -15,8 +15,12 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin/logs")
 public class AdminLogController {
-    @Autowired
-    private SysLogService sysLogService;
+
+    private final SysLogService sysLogService;
+
+    public AdminLogController(SysLogService sysLogService) {
+        this.sysLogService = sysLogService;
+    }
 
     // 日志管理首页
     @GetMapping("")

@@ -26,13 +26,13 @@ import java.util.Map;
 
 @Controller
 public class CartController {
+    private final CartService cartService;
+    private final CategoryService categoryService;
 
-    @Autowired
-    private CartService cartService;
-    @Autowired
-    private CategoryService categoryService;
-    private ProductDao productService;
-
+    public CartController(CartService cartService, CategoryService categoryService) {
+        this.cartService = cartService;
+        this.categoryService = categoryService;
+    }
 
     private boolean checkImageExists(String imageUrl) {
         if (imageUrl == null || imageUrl.isEmpty()) {

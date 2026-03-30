@@ -11,8 +11,11 @@ import java.util.List;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserDao userDao;
+    private final UserDao userDao;
+
+    public UserService(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     public User findById(Long id) {
         return userDao.findById(id);

@@ -10,8 +10,11 @@ import java.util.List;
 @Service
 public class CategoryService {
 
-    @Autowired
-    private CategoryDao categoryDao;
+    private final CategoryDao categoryDao;
+
+    public CategoryService(CategoryDao categoryDao) {
+        this.categoryDao = categoryDao;
+    }
 
     public Category findById(Long id) {
         return categoryDao.findById(id);

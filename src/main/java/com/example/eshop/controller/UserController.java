@@ -17,17 +17,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final MailService mailService;
+    private final CategoryService categoryService;
+    private final EmailCodeService emailCodeService;
 
-    @Autowired
-    private MailService mailService;
-
-    @Autowired
-    private CategoryService categoryService;
-
-    @Autowired
-    private EmailCodeService emailCodeService;
+    public UserController(UserService userService, MailService mailService, CategoryService categoryService, EmailCodeService emailCodeService) {
+        this.userService = userService;
+        this.mailService = mailService;
+        this.categoryService = categoryService;
+        this.emailCodeService = emailCodeService;
+    }
 
     @GetMapping("/login")
     public String loginPage(Model model) {

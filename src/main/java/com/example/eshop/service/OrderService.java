@@ -21,17 +21,17 @@ import java.util.UUID;
 @Service
 public class OrderService {
 
-    @Autowired
-    private OrderDao orderDao;
+    private final OrderDao orderDao;
+    private final OrderItemDao orderItemDao;
+    private final CartItemDao cartItemDao;
+    private final ProductDao productDao;
 
-    @Autowired
-    private OrderItemDao orderItemDao;
-
-    @Autowired
-    private CartItemDao cartItemDao;
-
-    @Autowired
-    private ProductDao productDao;
+    public OrderService(OrderDao orderDao, OrderItemDao orderItemDao, CartItemDao cartItemDao, ProductDao productDao) {
+        this.orderDao = orderDao;
+        this.orderItemDao = orderItemDao;
+        this.cartItemDao = cartItemDao;
+        this.productDao = productDao;
+    }
 
     public Order findById(Long id) {
         Order order = orderDao.findById(id);

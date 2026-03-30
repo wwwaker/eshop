@@ -24,8 +24,12 @@ import java.util.Objects;
 @Component
 @Slf4j
 public class LogAspect {
-    @Autowired
-    private SysLogService sysLogService;
+
+    private final SysLogService sysLogService;
+
+    public LogAspect(SysLogService sysLogService) {
+        this.sysLogService = sysLogService;
+    }
 
     // 拦截所有Controller
     @Pointcut("execution(* com.example.eshop.controller..*.*(..))" +

@@ -28,17 +28,17 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/admin")
 public class AdminController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
+    private final CategoryService categoryService;
+    private final OrderService orderService;
+    private final UserService userService;
 
-    @Autowired
-    private CategoryService categoryService;
-
-    @Autowired
-    private OrderService orderService;
-
-    @Autowired
-    private UserService userService;
+    public AdminController(ProductService productService, CategoryService categoryService, OrderService orderService, UserService userService) {
+        this.productService = productService;
+        this.categoryService = categoryService;
+        this.orderService = orderService;
+        this.userService = userService;
+    }
 
     private final Map<String, CacheEntry> dashboardCache = new ConcurrentHashMap<>();
     private static final long CACHE_DURATION_MS = 60000;

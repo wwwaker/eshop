@@ -13,9 +13,11 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
+    private final UserDao userDao;
 
-    @Autowired
-    private UserDao userDao;
+    public DataInitializer(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Override
     public void run(String... args) throws Exception {

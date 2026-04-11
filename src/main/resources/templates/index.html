@@ -12,9 +12,12 @@
 
         <div class="product-grid">
             <div class="product-card" th:each="product : ${products}">
-                <a th:href="'/product?id=' + ${product.id}"  style="text-decoration: none">
+                <a th:href="'/product?id=' + ${product.id}" style="text-decoration: none">
                     <div class="product-image">
-                        <img th:if="${imageExistsMap[product.id]}" th:src="${product.imageUrl}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;"  alt="商品图片"/>
+                        <img th:if="${imageExistsMap[product.id]}"
+                             th:src="${product.imageUrl}"
+                             style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;"
+                             alt="商品图片"/>
                         <span th:unless="${imageExistsMap[product.id]}">商品图片</span>
                     </div>
                 </a>
@@ -26,6 +29,34 @@
                         <input type="hidden" name="productId" th:value="${product.id}">
                         <button type="submit" class="btn">加入购物车</button>
                     </form>
+                </div>
+                <div class="product-hover-panel">
+                    <div class="product-hover-header">
+                        <span class="product-hover-label">商品详情</span>
+                        <span class="product-hover-price" th:text="'¥' + ${product.price}">¥0.00</span>
+                    </div>
+                    <div class="product-hover-name" th:text="${product.name}">商品名称</div>
+                    <div class="product-hover-description"
+                         th:text="${#strings.isEmpty(product.description) ? '暂无商品描述' : product.description}">
+                        商品描述
+                    </div>
+                    <div class="product-hover-meta">
+                        <div class="product-hover-item">
+                            <span class="product-hover-key">价格</span>
+                            <span class="product-hover-value accent" th:text="'¥' + ${product.price}">¥0.00</span>
+                        </div>
+                        <div class="product-hover-item">
+                            <span class="product-hover-key">库存</span>
+                            <span class="product-hover-value" th:text="${product.stock}">0</span>
+                        </div>
+                        <div class="product-hover-item">
+                            <span class="product-hover-key">分类</span>
+                            <span class="product-hover-value"
+                                  th:text="${#strings.isEmpty(product.categoryName) ? '未分类' : product.categoryName}">
+                                未分类
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

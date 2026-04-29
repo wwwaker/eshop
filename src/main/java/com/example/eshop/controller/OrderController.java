@@ -109,7 +109,7 @@ public class OrderController {
         List<Order> orders = orderService.findByUserId(user.getId());
         model.addAttribute("orders", orders);
         model.addAttribute("categories", categoryService.findAll());
-        return "order/user-order-list";
+        return "order/order-list";
     }
 
     @PostMapping("/order/pay")

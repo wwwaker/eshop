@@ -21,14 +21,7 @@
                             <p style="color: #999; font-size: 12px;" th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></p>
                         </div>
                         <div>
-                            <span class="order-status" th:classappend="${order.status == 'PENDING' ? 'status-pending' : 
-                                  order.status == 'PAID' ? 'status-paid' : 
-                                  order.status == 'SHIPPED' ? 'status-shipped' : 
-                                  order.status == 'COMPLETED' ? 'status-completed' : 'status-cancelled'}"
-                                  th:text="${order.status == 'PENDING' ? '待支付' : 
-                                           order.status == 'PAID' ? '已支付' : 
-                                           order.status == 'SHIPPED' ? '已发货' : 
-                                           order.status == 'COMPLETED' ? '已完成' : '已取消'}">状态</span>
+                            <span class="order-status" th:classappend="${order.status == 'PENDING' ? 'status-pending' : order.status == 'PAID' ? 'status-paid' : order.status == 'SHIPPED' ? 'status-shipped' : order.status == 'COMPLETED' ? 'status-completed' : 'status-cancelled'}" th:text="${order.status == 'PENDING' ? '待支付' : order.status == 'PAID' ? '已支付' : order.status == 'SHIPPED' ? '已发货' : order.status == 'COMPLETED' ? '已完成' : '已取消'}">状态</span>
                         </div>
                     </div>
                     

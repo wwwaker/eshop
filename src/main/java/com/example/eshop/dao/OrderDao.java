@@ -31,4 +31,9 @@ public interface OrderDao {
     int countTodayNewUsers();
     
     Map<String, Object> getUserActivityStats();
+
+    List<Order> findFiltered(@Param("keyword") String keyword, @Param("status") String status, @Param("sort") String sort, @Param("offset") int offset, @Param("pageSize") int pageSize);
+
+    int countFiltered(@Param("keyword") String keyword, @Param("status") String status);
+
 }

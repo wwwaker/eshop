@@ -1,107 +1,91 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>分类商品管理</title>
-  <link rel="stylesheet" href="/css/admin_style.css">
-</head>
+<head th:replace="~{admin/fragments :: admin-head('分类商品管理')}"></head>
 <body>
 <div class="admin-container">
-  <!-- 侧边栏 -->
-  <div class="sidebar">
-    <h2>电子商城</h2>
-    <a href="/admin">首页</a>
-    <a href="/admin/products">商品管理</a>
-    <a href="/admin/categories">分类管理</a>
-    <a href="/admin/orders">订单管理</a>
-    <a href="/admin/users">用户管理</a>
-    <a href="/">返回前台</a>
-    <a href="/admin/logs">系统日志</a>
-    <a href="/logout">退出登录</a>
-  </div>
+    <div th:replace="~{admin/fragments :: admin-sidebar('categories')}"></div>
 
-  <!-- 主内容 -->
-  <div class="main-content">
-    <div class="admin-header">
-      <h1 th:text="'分类商品管理: ' + ${category.name}"></h1>
-      <div>
-        <a th:href="'/admin/category/edit?id=' + ${category.id}" class="btn btn-secondary">编辑分类</a>
-        <a href="/admin/categories" class="btn btn-secondary">返回分类列表</a>
-      </div>
-    </div>
-
-    <div class="category-info">
-      <p><strong>分类描述：</strong><span th:text="${category.description}"></span></p>
-      <p><strong>排序：</strong><span th:text="${category.sortOrder}"></span></p>
-    </div>
-
-    <div class="admin-header" style="margin-top: 20px;">
-      <h2>该分类下的商品 (<span th:text="${products.size()}">0</span>)</h2>
-      <a href="/admin/product/add" class="btn">添加商品</a>
-    </div>
-
-    <!-- 商品列表 -->
-    <div class="admin-table" th:if="${not #lists.isEmpty(products)}">
-      <table>
-        <thead>
-        <tr>
-          <th>ID</th>
-          <th>商品名称</th>
-          <th>价格</th>
-          <th>库存</th>
-          <th>状态</th>
-          <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="product : ${products}">
-          <td th:text="${product.id}"></td>
-          <td th:text="${product.name}"></td>
-          <td th:text="'¥' + ${product.price}"></td>
-          <td th:text="${product.stock}"></td>
-          <td>
-            <span th:if="${product.status == 'ON_SALE'}" class="status status-completed">在售</span>
-            <span th:if="${product.status == 'OFF_SALE'}" class="status status-cancelled">下架</span>
-          </td>
-          <td>
-            <div class="action-buttons">
-              <a th:href="'/admin/product/edit?id=' + ${product.id}" class="btn btn-secondary">编辑</a>
-              <a th:href="'/admin/product/delete?id=' + ${product.id}" class="btn btn-danger" onclick="return confirm('确定删除此商品吗？')">删除</a>
+    <div class="main-content">
+        <div class="page-header">
+            <h1 th:text="'分类商品管理: ' + ${category.name}"></h1>
+            <div class="header-actions">
+                <a th:href="'/admin/category/edit?id=' + ${category.id}" class="btn btn-secondary">编辑分类</a>
+                <a href="/admin/categories" class="btn btn-secondary">← 返回分类列表</a>
             </div>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- 无商品提示 -->
-    <div class="empty-tip" th:if="${#lists.isEmpty(products)}">
-      <p>该分类下暂无商品</p>
-      <a href="/admin/product/add" class="btn">添加商品</a>
-    </div>
-
-    <!-- 移动商品到其他分类 -->
-    <div class="form-container" style="margin-top: 30px;" th:if="${not #lists.isEmpty(products)}">
-      <h3>批量移动商品到其他分类</h3>
-      <form action="/admin/category/moveProducts" method="post">
-        <input type="hidden" name="fromCategoryId" th:value="${category.id}">
-        <div class="form-group">
-          <label>移动到分类：</label>
-          <select name="toCategoryId" required>
-            <option value="">请选择目标分类</option>
-            <option th:each="cat : ${categories}"
-                    th:value="${cat.id}"
-                    th:text="${cat.name}"
-                    th:disabled="${cat.id == category.id}">
-            </option>
-          </select>
         </div>
-        <div class="form-actions">
-          <button type="submit" class="btn" onclick="return confirm('确定将所有商品移动到选中的分类吗？')">移动所有商品</button>
+
+        <div class="page-content">
+            <div class="category-info">
+                <p><strong>分类描述：</strong><span th:text="${category.description}"></span></p>
+                <p><strong>排序：</strong><span th:text="${category.sortOrder}"></span></p>
+            </div>
+
+            <div class="table-container" style="margin-bottom:24px;">
+                <div class="table-toolbar">
+                    <h3 style="font-size:16px;font-weight:600;">该分类下的商品 (<span th:text="${products.size()}">0</span>)</h3>
+                    <a href="/admin/product/add" class="btn btn-primary btn-sm">+ 添加商品</a>
+                </div>
+
+                <table class="data-table" th:if="${not #lists.isEmpty(products)}">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>商品名称</th>
+                            <th>价格</th>
+                            <th>库存</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="product : ${products}">
+                            <td th:text="${product.id}"></td>
+                            <td th:text="${product.name}"></td>
+                            <td th:text="'¥' + ${product.price}"></td>
+                            <td th:text="${product.stock}"></td>
+                            <td>
+                                <span class="badge" th:classappend="${product.status == 'ON_SALE'} ? 'badge-success' : 'badge-danger'"
+                                      th:text="${product.status == 'ON_SALE'} ? '在售' : '下架'"></span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a th:href="'/admin/product/edit?id=' + ${product.id}" class="btn btn-secondary btn-sm">编辑</a>
+                                    <a th:href="'/admin/product/delete?id=' + ${product.id}" class="btn btn-danger btn-sm" onclick="return confirm('确定删除此商品吗？')">删除</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div th:if="${#lists.isEmpty(products)}" class="empty-state">
+                    <div class="empty-icon">📦</div>
+                    <p>该分类下暂无商品</p>
+                    <a href="/admin/product/add" class="btn btn-primary">添加商品</a>
+                </div>
+            </div>
+
+            <div class="form-container" th:if="${not #lists.isEmpty(products)}">
+                <h3 style="margin-bottom:20px;font-size:16px;font-weight:600;color:var(--gray-800);">批量移动商品到其他分类</h3>
+                <form action="/admin/category/moveProducts" method="post">
+                    <input type="hidden" name="fromCategoryId" th:value="${category.id}">
+                    <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>移动到分类</label>
+                            <select name="toCategoryId" required>
+                                <option value="">请选择目标分类</option>
+                                <option th:each="cat : ${categories}"
+                                        th:value="${cat.id}"
+                                        th:text="${cat.name}"
+                                        th:disabled="${cat.id == category.id}">
+                                </option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-warning" onclick="return confirm('确定将所有商品移动到选中的分类吗？')">移动所有商品</button>
+                    </div>
+                </form>
+            </div>
         </div>
-      </form>
     </div>
-  </div>
 </div>
 </body>
 </html>

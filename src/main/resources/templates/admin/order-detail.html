@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: admin-head('订单详情')}"></head>
+<body>
+<div class="admin-container">
+    <div th:replace="~{admin/fragments :: admin-sidebar('orders')}"></div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>订单详情</h1>
+            <div class="header-actions">
+                <a href="/admin/orders" class="btn btn-secondary">← 返回订单列表</a>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <div class="order-detail-grid fade-in">
+                <div class="detail-card">
+                    <h4>订单信息</h4>
+                    <div class="detail-item">
+                        <span class="label">订单编号</span>
+                        <span class="value" th:text="${order.orderNo}"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">下单时间</span>
+                        <span class="value" th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">订单状态</span>
+                        <span class="value">
+                            <span class="badge" th:classappend="${order.status == 'PENDING' ? 'badge-warning' : order.status == 'PAID' ? 'badge-info' : order.status == 'SHIPPED' ? 'badge-success' : order.status == 'COMPLETED' ? 'badge-purple' : 'badge-danger'}" th:text="${order.status == 'PENDING' ? '待支付' : order.status == 'PAID' ? '已支付' : order.status == 'SHIPPED' ? '已发货' : order.status == 'COMPLETED' ? '已完成' : '已取消'}"></span>
+                        </span>
+                    </div>
+                    <div class="detail-item" th:if="${order.updatedAt != null}">
+                        <span class="label">更新时间</span>
+                        <span class="value" th:text="${#temporals.format(order.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <h4>收货信息</h4>
+                    <div class="detail-item">
+                        <span class="label">收货人</span>
+                        <span class="value" th:text="${order.receiverName}"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">联系电话</span>
+                        <span class="value" th:text="${order.receiverPhone}"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">收货地址</span>
+                        <span class="value" th:text="${order.receiverAddress}"></span>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <h4>用户信息</h4>
+                    <div class="detail-item">
+                        <span class="label">用户名</span>
+                        <span class="value" th:text="${order.user.username}"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">用户ID</span>
+                        <span class="value" th:text="${order.userId}"></span>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <h4>订单操作</h4>
+                    <div style="display:flex;flex-direction:column;gap:8px;padding-top:4px;">
+                        <form th:if="${order.status == 'PAID'}" action="/admin/order/ship" method="post">
+                            <input type="hidden" name="orderId" th:value="${order.id}">
+                            <button type="submit" class="btn btn-success" style="width:100%;">确认发货</button>
+                        </form>
+                        <form th:if="${order.status == 'SHIPPED'}" action="/admin/order/complete" method="post">
+                            <input type="hidden" name="orderId" th:value="${order.id}">
+                            <button type="submit" class="btn btn-primary" style="width:100%;">确认完成</button>
+                        </form>
+                        <span th:if="${order.status == 'PENDING'}" class="badge badge-warning" style="padding:10px;text-align:center;font-size:14px;">等待用户支付</span>
+                        <span th:if="${order.status == 'COMPLETED'}" class="badge badge-purple" style="padding:10px;text-align:center;font-size:14px;">订单已完成</span>
+                        <span th:if="${order.status == 'CANCELLED'}" class="badge badge-danger" style="padding:10px;text-align:center;font-size:14px;">订单已取消</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card fade-in" style="margin-bottom:24px;">
+                <div class="card-header">
+                    <h3>商品明细</h3>
+                </div>
+                <div class="card-body" style="padding:0;">
+                    <table class="order-items-table">
+                        <thead>
+                            <tr>
+                                <th>商品图片</th>
+                                <th>商品名称</th>
+                                <th>单价</th>
+                                <th>数量</th>
+                                <th>小计</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${order.items}">
+                                <td>
+                                    <img th:if="${item.product != null and item.product.imageUrl != null}" th:src="${item.product.imageUrl}" alt="">
+                                    <div th:unless="${item.product != null and item.product.imageUrl != null}" style="width:40px;height:40px;background:var(--gray-100);border-radius:6px;"></div>
+                                </td>
+                                <td th:text="${item.productName}"></td>
+                                <td th:text="'¥' + ${item.productPrice}"></td>
+                                <td th:text="${item.quantity}"></td>
+                                <td th:text="'¥' + ${item.subtotal}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="order-total-bar fade-in">
+                <span class="total-label">订单总金额</span>
+                <span class="total-amount" th:text="'¥' + ${order.totalAmount}">¥0.00</span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

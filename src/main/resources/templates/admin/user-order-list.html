@@ -1,28 +1,56 @@
-<head th:replace="~{layout :: head('我的订单')}"></head>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: admin-head('用户订单')}"></head>
 <body>
-<div th:replace="~{layout :: header}"></div>
+<div class="admin-container">
+    <div th:replace="~{admin/fragments :: admin-sidebar('users')}"></div>
 
-<main class="main">
-    <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="margin: 0;">
-                    <span th:if="${viewingUser != null}">
-                        <span th:text="${viewingUser.username}"></span> 的订单
-                    </span>
-                <span th:unless="${viewingUser != null}">我的订单</span>
-            </h2>
-            <div th:if="${viewingUser != null}">
-                <a th:href="@{/admin/user/edit(id=${viewingUser.id})}" class="btn btn-secondary">返回用户编辑</a>
+    <div class="main-content">
+        <div class="page-header">
+            <h1>
+                <span th:if="${viewingUser != null}" th:text="${viewingUser.username} + ' 的订单'"></span>
+                <span th:unless="${viewingUser != null}">用户订单</span>
+            </h1>
+            <div class="header-actions">
+                <a th:if="${viewingUser != null}" th:href="@{/admin/user/edit(id=${viewingUser.id})}" class="btn btn-secondary">← 返回用户编辑</a>
+                <a href="/admin/users" class="btn btn-secondary">返回用户列表</a>
             </div>
         </div>
 
-        <div th:if="${#lists.isEmpty(orders)}" style="text-align: center; padding: 50px; background: white; border-radius: 8px;">
-            <p style="color: #999; margin-bottom: 20px;">暂无订单</p>
-            <a href="/" class="btn">去购物</a>
-        </div>
+        <div class="page-content">
+            <div th:if="${#lists.isEmpty(orders)}" class="empty-state" style="background:white;border-radius:var(--border-radius);border:1px solid var(--gray-200);">
+                <div class="empty-icon">📋</div>
+                <p>该用户暂无订单</p>
+            </div>
 
-        <div class="order-list" th:if="${!#lists.isEmpty(orders)}">
-            <p style="color: #999; margin-bottom: 20px;">暂无订单</p>
+            <div th:if="${!#lists.isEmpty(orders)}" class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>订单编号</th>
+                            <th>总金额</th>
+                            <th>状态</th>
+                            <th>下单时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${orders}">
+                            <td><strong th:text="${order.orderNo}"></strong></td>
+                            <td th:text="'¥' + ${order.totalAmount}"></td>
+                            <td>
+                                <span class="badge" th:classappend="${order.status == 'PENDING' ? 'badge-warning' : order.status == 'PAID' ? 'badge-info' : order.status == 'SHIPPED' ? 'badge-success' : order.status == 'COMPLETED' ? 'badge-purple' : 'badge-danger'}" th:text="${order.status == 'PENDING' ? '待支付' : order.status == 'PAID' ? '已支付' : order.status == 'SHIPPED' ? '已发货' : order.status == 'COMPLETED' ? '已完成' : '已取消'}"></span>
+                            </td>
+                            <td th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td>
+                                <a th:href="'/admin/order/detail?id=' + ${order.id}" class="btn btn-secondary btn-sm">查看详情</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</main>
+</div>
+</body>
+</html>

@@ -61,4 +61,13 @@ public class UserService {
     public int countTodayNewUsers() {
         return userDao.countTodayNewUsers();
     }
+
+    public List<User> findFiltered(String keyword, String role, int page, int pageSize) {
+        int offset = page * pageSize;
+        return userDao.findFiltered(keyword, role, offset, pageSize);
+    }
+
+    public int countFiltered(String keyword, String role) {
+        return userDao.countFiltered(keyword, role);
+    }
 }

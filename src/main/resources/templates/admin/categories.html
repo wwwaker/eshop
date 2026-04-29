@@ -1,84 +1,77 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>分类管理</title>
-    <link rel="stylesheet" href="/css/admin_style.css">
-</head>
+<head th:replace="~{admin/fragments :: admin-head('分类管理')}"></head>
 <body>
-    <div class="admin-container">
-        <!-- 侧边栏 -->
-        <div class="sidebar">
-            <h2>电子商城</h2>
-            <a href="/admin">首页</a>
-            <a href="/admin/products">商品管理</a>
-            <a href="/admin/categories">分类管理</a>
-            <a href="/admin/orders">订单管理</a>
-            <a href="/admin/users">用户管理</a>
-            <a href="/">返回前台</a>
-            <a href="/admin/logs" class="active">系统日志</a>
-            <a href="/logout">退出登录</a>
+<div class="admin-container">
+    <div th:replace="~{admin/fragments :: admin-sidebar('categories')}"></div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>分类管理</h1>
         </div>
-        
-        <!-- 主内容 -->
-        <div class="main-content">
-            <div class="admin-header">
-                <h1>分类管理</h1>
-            </div>
-            
-            <!-- 分类列表 -->
-            <div class="admin-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>分类名称</th>
-                            <th>描述</th>
-                            <th>排序</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="category : ${categories}">
-                            <td th:text="${category.id}"></td>
-                            <td th:text="${category.name}"></td>
-                            <td th:text="${category.description}"></td>
-                            <td th:text="${category.sortOrder}"></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <a th:href="'/admin/category/products?id=' + ${category.id}" class="btn">管理商品</a>
-                                    <a th:href="'/admin/category/edit?id=' + ${category.id}" class="btn btn-secondary">编辑</a>
-                                    <a th:href="'/admin/category/delete?id=' + ${category.id}" class="btn btn-danger" onclick="return confirm('确定删除吗？')">删除</a>
-                                    <a th:href="'/admin/category/delete?id=' + ${category.id}" class="btn btn-danger" onclick="return confirm('确定删除该分类吗？删除后该分类下的商品将变为未分类状态。')">删除</a>
-                                </div>
-                            </td> 
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- 添加分类表单 -->
-            <div class="form-container">
-                <h3>添加分类</h3>
-                <form action="/admin/category/save" method="post">
-                    <div class="form-group">
-                        <label>分类名称</label>
-                        <input type="text" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>描述</label>
-                        <textarea name="description" rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>排序</label>
-                        <input type="number" name="sortOrder" value="0">
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn">保存</button>
-                    </div>
-                </form>
+
+        <div class="page-content">
+            <div style="display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start;">
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>分类名称</th>
+                                <th>描述</th>
+                                <th>排序</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="category : ${categories}">
+                                <td th:text="${category.id}"></td>
+                                <td th:text="${category.name}"></td>
+                                <td th:text="${category.description}"></td>
+                                <td th:text="${category.sortOrder}"></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a th:href="'/admin/category/products?id=' + ${category.id}" class="btn btn-sm btn-primary">管理商品</a>
+                                        <a th:href="'/admin/category/edit?id=' + ${category.id}" class="btn btn-sm btn-secondary">编辑</a>
+                                        <a th:href="'/admin/category/delete?id=' + ${category.id}" class="btn btn-sm btn-danger" onclick="return confirm('确定删除该分类吗？删除后该分类下的商品将变为未分类状态。')">删除</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(categories)}">
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">🏷️</div>
+                                        <p>暂无分类数据</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-container">
+                    <h3 style="margin-bottom:20px;font-size:16px;font-weight:600;color:var(--gray-800);">添加分类</h3>
+                    <form action="/admin/category/save" method="post">
+                        <div class="form-group">
+                            <label>分类名称</label>
+                            <input type="text" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>描述</label>
+                            <textarea name="description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>排序</label>
+                            <input type="number" name="sortOrder" value="0">
+                        </div>
+                        <div class="form-actions" style="padding-top:0;border-top:none;">
+                            <button type="submit" class="btn btn-primary">保存</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>

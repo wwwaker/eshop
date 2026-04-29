@@ -199,4 +199,17 @@ public class OrderService {
     public Map<String, Object> getUserActivityStats() {
         return orderDao.getUserActivityStats();
     }
+
+    public List<Order> findFiltered(String keyword, String status, String sort, int page, int pageSize) {
+        int offset = page * pageSize;
+        List<Order> orders = orderDao.findFiltered(keyword, status, sort, offset, pageSize);
+        for (Order order : orders) {
+            order.setItems(orderItemDao.findByOrderId(order.getId()));
+        }
+        return orders;
+    }
+
+    public int countFiltered(String keyword, String status) {
+        return orderDao.countFiltered(keyword, status);
+    }
 }

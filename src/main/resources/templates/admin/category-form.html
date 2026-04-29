@@ -1,56 +1,44 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>分类管理</title>
-    <link rel="stylesheet" href="/css/admin_style.css">
-</head>
+<head th:replace="~{admin/fragments :: admin-head('编辑分类')}"></head>
 <body>
 <div class="admin-container">
-    <!-- 侧边栏 -->
-    <div class="sidebar">
-        <h2>电子商城</h2>
-        <a href="/admin">首页</a>
-        <a href="/admin/products">商品管理</a>
-        <a href="/admin/categories">分类管理</a>
-        <a href="/admin/orders">订单管理</a>
-        <a href="/admin/users">用户管理</a>
-        <a href="/">返回前台</a>
-        <a href="/admin/logs">系统日志</a>
-        <a href="/logout">退出登录</a>
-    </div>
+    <div th:replace="~{admin/fragments :: admin-sidebar('categories')}"></div>
 
-    <!-- 主内容 -->
     <div class="main-content">
-        <div class="admin-header">
+        <div class="page-header">
             <h1 th:text="${category != null ? '编辑分类' : '添加分类'}"></h1>
-            <a href="/admin/categories" class="btn btn-secondary">返回列表</a>
+            <div class="header-actions">
+                <a href="/admin/categories" class="btn btn-secondary">← 返回列表</a>
+            </div>
         </div>
 
-        <div class="form-container">
-            <form action="/admin/category/save" method="post">
-                <input type="hidden" name="id" th:value="${category != null ? category.id : null}">
+        <div class="page-content">
+            <div class="form-container" style="max-width: 600px;">
+                <form action="/admin/category/save" method="post">
+                    <input type="hidden" name="id" th:value="${category != null ? category.id : null}">
 
-                <div class="form-group">
-                    <label>分类名称</label>
-                    <input type="text" name="name" th:value="${category != null ? category.name : ''}" required>
-                </div>
+                    <div class="form-group">
+                        <label>分类名称</label>
+                        <input type="text" name="name" th:value="${category != null ? category.name : ''}" required>
+                    </div>
 
-                <div class="form-group">
-                    <label>描述</label>
-                    <textarea name="description" rows="3" th:text="${category != null ? category.description : ''}"></textarea>
-                </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea name="description" rows="3" th:text="${category != null ? category.description : ''}"></textarea>
+                    </div>
 
-                <div class="form-group">
-                    <label>排序</label>
-                    <input type="number" name="sortOrder" th:value="${category != null ? category.sortOrder : '0'}" required>
-                </div>
+                    <div class="form-group">
+                        <label>排序</label>
+                        <input type="number" name="sortOrder" th:value="${category != null ? category.sortOrder : '0'}" required>
+                    </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn">保存</button>
-                    <a href="/admin/categories" class="btn btn-secondary">取消</a>
-                </div>
-            </form>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">保存</button>
+                        <a href="/admin/categories" class="btn btn-secondary">取消</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

@@ -1,101 +1,126 @@
-NEW_FILE_CODE
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout :: head('编辑用户')}"></head>
-</head>
+<head th:replace="~{admin/fragments :: admin-head('编辑用户')}"></head>
 <body>
-<div th:replace="~{layout :: header}"></div>
+<div class="admin-container">
+    <div th:replace="~{admin/fragments :: admin-sidebar('users')}"></div>
 
-<main class="main">
-    <div class="container">
-        <h2 style="margin-bottom: 20px;">编辑用户</h2>
-
-        <div th:if="${error}" style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 20px;" th:text="${error}"></div>
-
-        <!-- 用户信息表单 -->
-        <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h3 style="margin-bottom: 20px;">个人信息</h3>
-            <form th:action="@{/admin/user/save}" method="post">
-                <input type="hidden" name="id" th:value="${user.id}">
-
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">用户名：</label>
-                    <input type="text" name="username" th:value="${user.username}" required
-                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">邮箱：</label>
-                    <input type="email" name="email" th:value="${user.email}" required
-                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">手机号：</label>
-                    <input type="text" name="phone" th:value="${user.phone}"
-                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">地址：</label>
-                    <input type="text" name="address" th:value="${user.address}"
-                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">角色：</label>
-                    <select name="role" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        <option value="USER" th:selected="${user.role == 'USER'}">普通用户</option>
-                        <option value="ADMIN" th:selected="${user.role == 'ADMIN'}">管理员</option>
-                        <option value="VIP" th:selected="${user.role == 'VIP'}">VIP 用户</option>
-                    </select>
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">重置密码：</label>
-                    <input type="password" name="password" placeholder="留空则不修改密码"
-                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    <small style="color: #999;">如需重置密码，请输入新密码；否则留空</small>
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">注册时间：</label>
-                    <input type="text" th:value="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss')}" disabled
-                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: #f5f5f5;">
-                </div>
-
-                <div style="text-align: center; margin-top: 20px;">
-                    <button type="submit" class="btn" style="padding: 12px 40px; font-size: 16px; margin-right: 10px;">保存修改</button>
-                    <a href="/admin/users" class="btn btn-secondary" style="padding: 12px 40px; font-size: 16px;">返回列表</a>
-                </div>
-            </form>
+    <div class="main-content">
+        <div class="page-header">
+            <h1>编辑用户</h1>
+            <div class="header-actions">
+                <a href="/admin/users" class="btn btn-secondary">← 返回列表</a>
+            </div>
         </div>
 
-        <!-- 订单统计信息 -->
-        <div style="background: white; padding: 20px; border-radius: 8px;">
-            <h3 style="margin-bottom: 20px;">订单统计</h3>
-            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-                <div style="flex: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; text-align: center;">
-                    <h4 style="margin: 0; font-size: 14px; opacity: 0.9;">总订单数</h4>
-                    <p style="font-size: 36px; font-weight: bold; margin: 10px 0 0 0;" th:text="${totalOrders}">0</p>
-                </div>
-                <div style="flex: 1; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 8px; text-align: center;">
-                    <h4 style="margin: 0; font-size: 14px; opacity: 0.9;">累计消费</h4>
-                    <p style="font-size: 36px; font-weight: bold; margin: 10px 0 0 0;" th:text="'¥' + ${totalSpent}">¥0</p>
-                </div>
-            </div>
+        <div class="page-content">
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-            <div style="text-align: center;">
-                <a th:href="@{/admin/user/orders(id=${user.id})}" class="btn" style="padding: 12px 40px; font-size: 16px;">查看该用户的所有订单</a>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+                <div class="form-container">
+                    <h3 style="margin-bottom:20px;font-size:16px;font-weight:600;color:var(--gray-800);">个人信息</h3>
+                    <form th:action="@{/admin/user/save}" method="post">
+                        <input type="hidden" name="id" th:value="${user.id}">
+
+                        <div class="form-group">
+                            <label>用户名</label>
+                            <input type="text" name="username" th:value="${user.username}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>邮箱</label>
+                            <input type="email" name="email" th:value="${user.email}" required>
+                        </div>
+
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                            <div class="form-group">
+                                <label>手机号</label>
+                                <input type="text" name="phone" th:value="${user.phone}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>角色</label>
+                                <select name="role">
+                                    <option value="USER" th:selected="${user.role == 'USER'}">普通用户</option>
+                                    <option value="ADMIN" th:selected="${user.role == 'ADMIN'}">管理员</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>地址</label>
+                            <input type="text" name="address" th:value="${user.address}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>重置密码</label>
+                            <input type="password" name="password" placeholder="留空则不修改密码">
+                            <small style="color:var(--gray-400);font-size:12px;">如需重置密码，请输入新密码；否则留空</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>注册时间</label>
+                            <input type="text" th:value="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss')}" disabled style="background:var(--gray-50);">
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">保存修改</button>
+                            <a href="/admin/users" class="btn btn-secondary">取消</a>
+                        </div>
+                    </form>
+                </div>
+
+                <div>
+                    <div class="stats-grid" style="margin-bottom:20px;">
+                        <div class="stat-card card-primary">
+                            <div class="stat-header">
+                                <span class="stat-label">总订单数</span>
+                                <div class="stat-icon">📋</div>
+                            </div>
+                            <div class="stat-value" th:text="${totalOrders}">0</div>
+                        </div>
+                        <div class="stat-card card-warning">
+                            <div class="stat-header">
+                                <span class="stat-label">累计消费</span>
+                                <div class="stat-icon">💰</div>
+                            </div>
+                            <div class="stat-value" th:text="'¥' + ${totalSpent}">¥0</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>最近订单</h3>
+                            <a th:href="@{/admin/user/orders(id=${user.id})}" class="btn btn-sm btn-primary">查看全部</a>
+                        </div>
+                        <div class="card-body" style="padding:0;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>订单号</th>
+                                        <th>金额</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="o : ${orders}" th:if="${oStat.index < 5}">
+                                        <td th:text="${o.orderNo}"></td>
+                                        <td th:text="'¥' + ${o.totalAmount}"></td>
+                                        <td>
+                                            <span class="badge" th:classappend="${o.status == 'PENDING' ? 'badge-warning' : o.status == 'PAID' ? 'badge-info' : o.status == 'SHIPPED' ? 'badge-success' : o.status == 'COMPLETED' ? 'badge-purple' : 'badge-danger'}" th:text="${o.status == 'PENDING' ? '待支付' : o.status == 'PAID' ? '已支付' : o.status == 'SHIPPED' ? '已发货' : o.status == 'COMPLETED' ? '已完成' : '已取消'}"></span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(orders)}">
+                                        <td colspan="3" style="text-align:center;color:var(--gray-400);padding:20px;">暂无订单</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</main>
-
-<footer class="footer">
-    <div class="container">
-        <p>&copy; 2026 电子商城 - 基于 Spring MVC 开发</p>
-    </div>
-</footer>
+</div>
 </body>
 </html>

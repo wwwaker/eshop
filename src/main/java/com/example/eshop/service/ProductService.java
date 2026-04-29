@@ -72,4 +72,13 @@ public class ProductService {
     public int moveToCategory(Long fromCategoryId, Long toCategoryId) {
         return productDao.moveToCategory(fromCategoryId, toCategoryId);
     }
+
+    public List<Product> findFiltered(String keyword, Long categoryId, String status, String sort, int page, int pageSize) {
+        int offset = page * pageSize;
+        return productDao.findFiltered(keyword, categoryId, status, sort, offset, pageSize);
+    }
+
+    public int countFiltered(String keyword, Long categoryId, String status) {
+        return productDao.countFiltered(keyword, categoryId, status);
+    }
 }

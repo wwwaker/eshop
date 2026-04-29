@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,8 @@ public class AdminController {
     private final CategoryService categoryService;
     private final OrderService orderService;
     private final UserService userService;
+
+    private static final int PAGE_SIZE = 10;
 
     public AdminController(ProductService productService, CategoryService categoryService, OrderService orderService, UserService userService) {
         this.productService = productService;
@@ -55,7 +56,7 @@ public class AdminController {
     private void loadDashboardData(Model model) {
         String cacheKey = "dashboard";
         CacheEntry cachedData = dashboardCache.get(cacheKey);
-        
+
         if (cachedData != null && !cachedData.isExpired()) {
             Map<String, Object> data = cachedData.getData();
             model.addAttribute("totalProducts", data.get("totalProducts"));
@@ -107,21 +108,37 @@ public class AdminController {
         model.addAttribute("totalCategories", totalCategories);
         model.addAttribute("totalOrders", totalOrders);
         model.addAttribute("totalUsers", totalUsers);
-
         model.addAttribute("todayNewProducts", todayNewProducts);
         model.addAttribute("todayOrders", todayOrders);
         model.addAttribute("todayNewUsers", todayNewUsers);
         model.addAttribute("todaySales", todaySales);
-
         model.addAttribute("salesTrend", salesTrend);
         model.addAttribute("hotProducts", hotProducts);
         model.addAttribute("userActivity", userActivity);
     }
 
     @GetMapping("/products")
-    public String adminProducts(Model model) {
-        List<Product> products = productService.findAll();
+    public String adminProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false, defaultValue = "id_desc") String sort,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            Model model) {
+
+        List<Product> products = productService.findFiltered(keyword, categoryId, status, sort, page, PAGE_SIZE);
+        int totalItems = productService.countFiltered(keyword, categoryId, status);
+        int totalPages = (int) Math.ceil((double) totalItems / PAGE_SIZE);
+
         model.addAttribute("products", products);
+        model.addAttribute("categories", categoryService.findAll());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("status", status);
+        model.addAttribute("sort", sort);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalItems", totalItems);
         return "admin/products";
     }
 
@@ -171,15 +188,47 @@ public class AdminController {
     }
 
     @GetMapping("/orders")
-    public String adminOrders(Model model) {
-        List<Order> orders = orderService.findAll();
+    public String adminOrders(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false, defaultValue = "created_desc") String sort,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            Model model) {
+
+        List<Order> orders = orderService.findFiltered(keyword, status, sort, page, PAGE_SIZE);
+        int totalItems = orderService.countFiltered(keyword, status);
+        int totalPages = (int) Math.ceil((double) totalItems / PAGE_SIZE);
+
         model.addAttribute("orders", orders);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("status", status);
+        model.addAttribute("sort", sort);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalItems", totalItems);
         return "admin/orders";
+    }
+
+    @GetMapping("/order/detail")
+    public String orderDetail(@RequestParam("id") Long id, Model model) {
+        Order order = orderService.findById(id);
+        if (order == null) {
+            return "redirect:/admin/orders";
+        }
+        model.addAttribute("order", order);
+        return "admin/order-detail";
     }
 
     @PostMapping("/order/ship")
     public String shipOrder(@RequestParam("orderId") Long orderId) {
         orderService.shipOrder(orderId);
+        dashboardCache.clear();
+        return "redirect:/admin/orders";
+    }
+
+    @PostMapping("/order/complete")
+    public String completeOrder(@RequestParam("orderId") Long orderId) {
+        orderService.completeOrder(orderId);
         dashboardCache.clear();
         return "redirect:/admin/orders";
     }
@@ -207,13 +256,13 @@ public class AdminController {
         return "redirect:/admin/categories";
     }
 
-
     @GetMapping("/category/edit")
     public String editCategoryPage(@RequestParam("id") Long id, Model model) {
         Category category = categoryService.findById(id);
         model.addAttribute("category", category);
         return "admin/category-form";
     }
+
     @GetMapping("/category/products")
     public String categoryProducts(@RequestParam("id") Long categoryId, Model model) {
         Category category = categoryService.findById(categoryId);
@@ -232,7 +281,7 @@ public class AdminController {
             model.addAttribute("error", "源分类和目标分类不能相同");
             return "redirect:/admin/category/products?id=" + fromCategoryId;
         }
-        int count = productService.moveToCategory(fromCategoryId, toCategoryId);
+        productService.moveToCategory(fromCategoryId, toCategoryId);
         dashboardCache.clear();
         return "redirect:/admin/category/products?id=" + toCategoryId;
     }
@@ -245,9 +294,22 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public String adminUsers(Model model) {
-        List<User> users = userService.findAll();
+    public String adminUsers(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String role,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            Model model) {
+
+        List<User> users = userService.findFiltered(keyword, role, page, PAGE_SIZE);
+        int totalItems = userService.countFiltered(keyword, role);
+        int totalPages = (int) Math.ceil((double) totalItems / PAGE_SIZE);
+
         model.addAttribute("users", users);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("role", role);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalItems", totalItems);
         return "admin/users";
     }
 
@@ -336,7 +398,7 @@ public class AdminController {
         List<Order> orders = orderService.findByUserId(userId);
         model.addAttribute("orders", orders);
         model.addAttribute("viewingUser", targetUser);
-        return "order/order-list";
+        return "admin/user-order-list";
     }
 
     private static class CacheEntry {

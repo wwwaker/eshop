@@ -40,4 +40,8 @@ public interface ProductDao {
 
     int moveToCategory(@Param("fromCategoryId") Long fromCategoryId, @Param("toCategoryId") Long toCategoryId);
 
+    List<Product> findFiltered(@Param("keyword") String keyword, @Param("categoryId") Long categoryId, @Param("status") String status, @Param("sort") String sort, @Param("offset") int offset, @Param("pageSize") int pageSize);
+
+    int countFiltered(@Param("keyword") String keyword, @Param("categoryId") Long categoryId, @Param("status") String status);
+
 }

@@ -1,98 +1,122 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>系统日志管理</title>
-    <link rel="stylesheet" href="/css/admin_style.css">
-</head>
+<head th:replace="~{admin/fragments :: admin-head('系统日志')}"></head>
 <body>
 <div class="admin-container">
-    <div class="sidebar">
-        <h2>电子商城</h2>
-        <a href="/admin">首页</a>
-        <a href="/admin/products">商品管理</a>
-        <a href="/admin/categories">分类管理</a>
-        <a href="/admin/orders">订单管理</a>
-        <a href="/admin/users">用户管理</a>
-        <a href="/">返回前台</a>
-        <a href="/admin/logs" class="active">系统日志</a>
-        <a href="/logout">退出登录</a>
-    </div>
+    <div th:replace="~{admin/fragments :: admin-sidebar('logs')}"></div>
 
     <div class="main-content">
-        <div class="admin-header">
-            <h1>系统日志管理</h1>
+        <div class="page-header">
+            <h1>系统日志</h1>
         </div>
 
-        <!-- 日志筛选 + 清空按钮 -->
-        <div class="log-filter">
-            <form action="/admin/logs" method="get" style="display: flex; gap: 10px;">
-
-                <select name="fileName" onchange="this.form.submit()">
-                    <option th:each="file : ${allLogFiles}"
-                            th:value="${file}"
-                            th:selected="${file == currentFileName}">
-                        [[${file}]]
-                    </option>
-                </select>
-
-                <select name="level">
-                    <option value="">全部级别</option>
-                    <option value="INFO" th:selected="${currentLevel=='INFO'}">INFO</option>
-                    <option value="WARN" th:selected="${currentLevel=='WARN'}">WARN</option>
-                    <option value="ERROR" th:selected="${currentLevel=='ERROR'}">ERROR</option>
-                    <option value="DEBUG" th:selected="${currentLevel=='DEBUG'}">DEBUG</option>
-                </select>
-                <button type="submit" class="btn">筛选</button>
-            </form>
-            <!-- 清空日志按钮 -->
-            <button class="clear-btn" onclick="clearLogs()">清空数据库日志表</button>
-        </div>
-
-        <!-- 实时运行日志 -->
-        <div class="form-container">
-            <h3>实时运行日志：[[${currentFileName}]]</h3>
-            <div class="log-container">
-                <div th:each="log : ${realTimeLogs}">
-                    <span th:class="${log.contains('ERROR') ? 'log-error' :
-                                      log.contains('WARN') ? 'log-warn' :
-                                      log.contains('DEBUG') ? 'log-debug' : 'log-info'}"
-                          th:text="${log}"></span>
+        <div class="page-content">
+            <div class="card" style="margin-bottom:24px;">
+                <div class="card-header">
+                    <h3>实时运行日志：<span th:text="${currentFileName}"></span></h3>
+                </div>
+                <div class="card-body">
+                    <div class="log-filter">
+                        <form action="/admin/logs" method="get" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                            <select name="fileName" class="filter-select" onchange="this.form.submit()">
+                                <option th:each="file : ${allLogFiles}"
+                                        th:value="${file}"
+                                        th:text="${file}"
+                                        th:selected="${file == currentFileName}">
+                                </option>
+                            </select>
+                            <select name="level" class="filter-select">
+                                <option value="">全部级别</option>
+                                <option value="INFO" th:selected="${currentLevel == 'INFO'}">INFO</option>
+                                <option value="WARN" th:selected="${currentLevel == 'WARN'}">WARN</option>
+                                <option value="ERROR" th:selected="${currentLevel == 'ERROR'}">ERROR</option>
+                                <option value="DEBUG" th:selected="${currentLevel == 'DEBUG'}">DEBUG</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm">筛选</button>
+                        </form>
+                    </div>
+                    <div class="log-container">
+                        <div th:each="logLine : ${realTimeLogs}">
+                            <span th:class="${logLine.contains('ERROR') ? 'log-error' : logLine.contains('WARN') ? 'log-warn' : logLine.contains('DEBUG') ? 'log-debug' : 'log-info'}" th:text="${logLine}"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 操作审计（数据库）日志 -->
-        <div class="form-container" style="margin-top: 20px;">
-            <h3>操作审计日志</h3>
-            <div class="admin-table">
-                <table>
+            <div class="table-container">
+                <div class="table-toolbar">
+                    <h3 style="font-size:16px;font-weight:600;">操作审计日志</h3>
+                    <button class="btn btn-danger btn-sm" onclick="clearLogs()">🗑️ 清空日志</button>
+                </div>
+
+                <div class="table-toolbar" style="border-bottom:none;padding-bottom:0;">
+                    <form action="/admin/logs" method="get" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                        <input type="hidden" name="fileName" th:value="${currentFileName}">
+                        <div class="search-box" style="display:flex;gap:8px;align-items:center;">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" name="searchKeyword" placeholder="搜索日志内容..." th:value="${searchKeyword}">
+                        </div>
+                        <select name="level" class="filter-select">
+                            <option value="">全部级别</option>
+                            <option value="INFO" th:selected="${currentLevel == 'INFO'}">INFO</option>
+                            <option value="WARN" th:selected="${currentLevel == 'WARN'}">WARN</option>
+                            <option value="ERROR" th:selected="${currentLevel == 'ERROR'}">ERROR</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm">搜索</button>
+                    </form>
+                </div>
+
+                <table class="data-table">
                     <thead>
-                    <tr>
-                        <th>级别</th>
-                        <th>时间</th>
-                        <th>用户</th>
-                        <th>请求URL</th>
-                        <th>类/方法</th>
-                        <th>内容</th>
-                    </tr>
+                        <tr>
+                            <th>级别</th>
+                            <th>时间</th>
+                            <th>用户</th>
+                            <th>请求URL</th>
+                            <th>类/方法</th>
+                            <th>内容</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="log : ${operateLogs}">
-                        <td th:text="${log.logLevel}" th:class="${log.logLevel=='ERROR'?'log-error':log.logLevel=='WARN'?'log-warn':'log-info'}"></td>
-                        <td th:text="${#temporals.format(log.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
-                        <td th:text="${log.username}"></td>
-                        <td th:text="${log.requestUrl}"></td>
-                        <td th:text="${log.className.substring(0,20)+'.../'+log.methodName}"></td>
-                        <td th:text="${log.logContent}"></td>
-                    </tr>
+                        <tr th:each="log : ${operateLogs}">
+                            <td>
+                                <span class="badge" th:classappend="${log.logLevel == 'ERROR' ? 'badge-danger' : log.logLevel == 'WARN' ? 'badge-warning' : 'badge-info'}" th:text="${log.logLevel}"></span>
+                            </td>
+                            <td th:text="${#temporals.format(log.createTime, 'yyyy-MM-dd HH:mm:ss')}" style="white-space:nowrap;"></td>
+                            <td th:text="${log.username}"></td>
+                            <td th:text="${log.requestUrl}" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></td>
+                            <td th:text="${log.className.length() > 20 ? log.className.substring(0, 20) + '.../' + log.methodName : log.className + '/' + log.methodName}" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></td>
+                            <td th:text="${log.logContent}" style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(operateLogs)}">
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <div class="empty-icon">📝</div>
+                                    <p>暂无操作日志</p>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
+
+                <div class="pagination-wrapper" th:if="${totalPages > 1}">
+                    <div class="pagination-info">
+                        共 <strong th:text="${totalItems}">0</strong> 条记录，第 <strong th:text="${currentPage + 1}">1</strong> / <strong th:text="${totalPages}">1</strong> 页
+                    </div>
+                    <div class="pagination">
+                        <a th:href="@{/admin/logs(page=0, level=${currentLevel}, searchKeyword=${searchKeyword})}" th:classappend="${currentPage == 0} ? 'disabled'">«</a>
+                        <a th:href="@{/admin/logs(page=${currentPage - 1}, level=${currentLevel}, searchKeyword=${searchKeyword})}" th:classappend="${currentPage == 0} ? 'disabled'">‹</a>
+                        <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                            <a th:if="${i >= currentPage - 3 and i <= currentPage + 3}" th:href="@{/admin/logs(page=${i}, level=${currentLevel}, searchKeyword=${searchKeyword})}" th:text="${i + 1}" th:classappend="${i == currentPage} ? 'active'"></a>
+                        </th:block>
+                        <a th:href="@{/admin/logs(page=${currentPage + 1}, level=${currentLevel}, searchKeyword=${searchKeyword})}" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">›</a>
+                        <a th:href="@{/admin/logs(page=${totalPages - 1}, level=${currentLevel}, searchKeyword=${searchKeyword})}" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">»</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
 <script src="/js/admin_logs.js"></script>
 </body>
 </html>

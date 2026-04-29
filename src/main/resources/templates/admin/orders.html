@@ -1,33 +1,44 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>订单管理</title>
-    <link rel="stylesheet" href="/css/admin_style.css">
-</head>
+<head th:replace="~{admin/fragments :: admin-head('订单管理')}"></head>
 <body>
-    <div class="admin-container">
-        <!-- 侧边栏 -->
-        <div class="sidebar">
-            <h2>电子商城</h2>
-            <a href="/admin">首页</a>
-            <a href="/admin/products">商品管理</a>
-            <a href="/admin/categories">分类管理</a>
-            <a href="/admin/orders">订单管理</a>
-            <a href="/admin/users">用户管理</a>
-            <a href="/">返回前台</a>
-            <a href="/admin/logs" class="active">系统日志</a>
-            <a href="/logout">退出登录</a>
+<div class="admin-container">
+    <div th:replace="~{admin/fragments :: admin-sidebar('orders')}"></div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>订单管理</h1>
         </div>
-        
-        <!-- 主内容 -->
-        <div class="main-content">
-            <div class="admin-header">
-                <h1>订单管理</h1>
-            </div>
-            
-            <div class="admin-table">
-                <table>
+
+        <div class="page-content">
+            <div class="table-container">
+                <div class="table-toolbar">
+                    <form action="/admin/orders" method="get" class="search-box" style="display:flex;gap:8px;align-items:center;">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" name="keyword" placeholder="搜索订单号/用户名..." th:value="${keyword}">
+                    </form>
+                    <div class="filter-group">
+                        <form action="/admin/orders" method="get" style="display:flex;gap:8px;align-items:center;">
+                            <input type="hidden" name="keyword" th:value="${keyword}">
+                            <select name="status" class="filter-select" onchange="this.form.submit()">
+                                <option value="">全部状态</option>
+                                <option value="PENDING" th:selected="${status == 'PENDING'}">待支付</option>
+                                <option value="PAID" th:selected="${status == 'PAID'}">已支付</option>
+                                <option value="SHIPPED" th:selected="${status == 'SHIPPED'}">已发货</option>
+                                <option value="COMPLETED" th:selected="${status == 'COMPLETED'}">已完成</option>
+                                <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">已取消</option>
+                            </select>
+                            <select name="sort" class="filter-select" onchange="this.form.submit()">
+                                <option value="created_desc" th:selected="${sort == 'created_desc' or sort == null}">最新下单</option>
+                                <option value="created_asc" th:selected="${sort == 'created_asc'}">最早下单</option>
+                                <option value="amount_desc" th:selected="${sort == 'amount_desc'}">金额降序</option>
+                                <option value="amount_asc" th:selected="${sort == 'amount_asc'}">金额升序</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>订单编号</th>
@@ -40,34 +51,55 @@
                     </thead>
                     <tbody>
                         <tr th:each="order : ${orders}">
-                            <td th:text="${order.orderNo}"></td>
+                            <td><strong th:text="${order.orderNo}"></strong></td>
                             <td th:text="${order.user.username}"></td>
                             <td th:text="'¥' + ${order.totalAmount}"></td>
                             <td>
-                                <span class="status-badge" th:classappend="${order.status == 'PENDING' ? 'status-pending' : 
-                                      order.status == 'PAID' ? 'status-paid' : 
-                                      order.status == 'SHIPPED' ? 'status-shipped' : 
-                                      order.status == 'COMPLETED' ? 'status-completed' : 'status-cancelled'}"
-                                      th:text="${order.status == 'PENDING' ? '待支付' : 
-                                               order.status == 'PAID' ? '已支付' : 
-                                               order.status == 'SHIPPED' ? '已发货' : 
-                                               order.status == 'COMPLETED' ? '已完成' : '已取消'}">状态</span>
+                                <span class="badge" th:classappend="${order.status == 'PENDING' ? 'badge-warning' : order.status == 'PAID' ? 'badge-info' : order.status == 'SHIPPED' ? 'badge-success' : order.status == 'COMPLETED' ? 'badge-purple' : 'badge-danger'}" th:text="${order.status == 'PENDING' ? '待支付' : order.status == 'PAID' ? '已支付' : order.status == 'SHIPPED' ? '已发货' : order.status == 'COMPLETED' ? '已完成' : '已取消'}"></span>
                             </td>
                             <td th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
                             <td>
                                 <div class="action-buttons">
-                                    <a th:href="'/order/detail?orderNo=' + ${order.orderNo}" class="btn btn-secondary">查看</a>
+                                    <a th:href="'/admin/order/detail?id=' + ${order.id}" class="btn btn-secondary btn-sm">查看详情</a>
                                     <form th:if="${order.status == 'PAID'}" action="/admin/order/ship" method="post" style="display: inline;">
                                         <input type="hidden" name="orderId" th:value="${order.id}">
-                                        <button type="submit" class="btn">发货</button>
+                                        <button type="submit" class="btn btn-success btn-sm">发货</button>
                                     </form>
+                                    <form th:if="${order.status == 'SHIPPED'}" action="/admin/order/complete" method="post" style="display: inline;">
+                                        <input type="hidden" name="orderId" th:value="${order.id}">
+                                        <button type="submit" class="btn btn-primary btn-sm">确认完成</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(orders)}">
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <div class="empty-icon">📋</div>
+                                    <p>暂无订单数据</p>
                                 </div>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+
+                <div class="pagination-wrapper" th:if="${totalPages > 1}">
+                    <div class="pagination-info">
+                        共 <strong th:text="${totalItems}">0</strong> 条记录，第 <strong th:text="${currentPage + 1}">1</strong> / <strong th:text="${totalPages}">1</strong> 页
+                    </div>
+                    <div class="pagination">
+                        <a th:href="@{/admin/orders(page=0, keyword=${keyword}, status=${status}, sort=${sort})}" th:classappend="${currentPage == 0} ? 'disabled'">«</a>
+                        <a th:href="@{/admin/orders(page=${currentPage - 1}, keyword=${keyword}, status=${status}, sort=${sort})}" th:classappend="${currentPage == 0} ? 'disabled'">‹</a>
+                        <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                            <a th:if="${i >= currentPage - 3 and i <= currentPage + 3}" th:href="@{/admin/orders(page=${i}, keyword=${keyword}, status=${status}, sort=${sort})}" th:text="${i + 1}" th:classappend="${i == currentPage} ? 'active'"></a>
+                        </th:block>
+                        <a th:href="@{/admin/orders(page=${currentPage + 1}, keyword=${keyword}, status=${status}, sort=${sort})}" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">›</a>
+                        <a th:href="@{/admin/orders(page=${totalPages - 1}, keyword=${keyword}, status=${status}, sort=${sort})}" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">»</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>

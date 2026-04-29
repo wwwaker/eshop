@@ -1,38 +1,54 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>商品管理</title>
-    <link rel="stylesheet" href="/css/admin_style.css">
-</head>
+<head th:replace="~{admin/fragments :: admin-head('商品管理')}"></head>
 <body>
-    <div class="admin-container">
-        <!-- 侧边栏 -->
-        <div class="sidebar">
-            <h2>电子商城</h2>
-            <a href="/admin">首页</a>
-            <a href="/admin/products">商品管理</a>
-            <a href="/admin/categories">分类管理</a>
-            <a href="/admin/orders">订单管理</a>
-            <a href="/admin/users">用户管理</a>
-            <a href="/">返回前台</a>
-            <a href="/admin/logs" class="active">系统日志</a>
-            <a href="/logout">退出登录</a>
-        </div>
-        
-        <!-- 主内容 -->
-        <div class="main-content">
-            <div class="admin-header">
-                <h1>商品管理</h1>
-                <a href="/admin/product/add" class="btn">添加商品</a>
+<div class="admin-container">
+    <div th:replace="~{admin/fragments :: admin-sidebar('products')}"></div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>商品管理</h1>
+            <div class="header-actions">
+                <a href="/admin/product/add" class="btn btn-primary">+ 添加商品</a>
             </div>
-            
-            <div class="admin-table">
-                <table>
+        </div>
+
+        <div class="page-content">
+            <div class="table-container">
+                <div class="table-toolbar">
+                    <form action="/admin/products" method="get" class="search-box" style="display:flex;gap:8px;align-items:center;">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" name="keyword" placeholder="搜索商品名称..." th:value="${keyword}">
+                    </form>
+                    <div class="filter-group">
+                        <form action="/admin/products" method="get" style="display:flex;gap:8px;align-items:center;">
+                            <input type="hidden" name="keyword" th:value="${keyword}">
+                            <select name="categoryId" class="filter-select" onchange="this.form.submit()">
+                                <option value="">全部分类</option>
+                                <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}" th:selected="${cat.id == categoryId}"></option>
+                            </select>
+                            <select name="status" class="filter-select" onchange="this.form.submit()">
+                                <option value="">全部状态</option>
+                                <option value="ON_SALE" th:selected="${status == 'ON_SALE'}">在售</option>
+                                <option value="OFF_SALE" th:selected="${status == 'OFF_SALE'}">下架</option>
+                            </select>
+                            <select name="sort" class="filter-select" onchange="this.form.submit()">
+                                <option value="id_desc" th:selected="${sort == 'id_desc' or sort == null}">最新创建</option>
+                                <option value="id_asc" th:selected="${sort == 'id_asc'}">最早创建</option>
+                                <option value="price_asc" th:selected="${sort == 'price_asc'}">价格升序</option>
+                                <option value="price_desc" th:selected="${sort == 'price_desc'}">价格降序</option>
+                                <option value="stock_asc" th:selected="${sort == 'stock_asc'}">库存升序</option>
+                                <option value="stock_desc" th:selected="${sort == 'stock_desc'}">库存降序</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>商品图片</th>
+                            <th>图片</th>
                             <th>商品名称</th>
                             <th>价格</th>
                             <th>库存</th>
@@ -46,8 +62,8 @@
                             <td th:text="${product.id}"></td>
                             <td>
                                 <div class="product-image">
-                                    <img th:src="${product.imageUrl}" th:if="${product.imageUrl != null and product.imageUrl != ''}" />
-                                    <span th:unless="${product.imageUrl != null and product.imageUrl != ''}">无</span>
+                                    <img th:if="${product.imageUrl != null and product.imageUrl != ''}" th:src="${product.imageUrl}" />
+                                    <span th:unless="${product.imageUrl != null and product.imageUrl != ''}" class="no-image">无</span>
                                 </div>
                             </td>
                             <td th:text="${product.name}"></td>
@@ -55,21 +71,44 @@
                             <td th:text="${product.stock}"></td>
                             <td th:text="${product.categoryName}"></td>
                             <td>
-                                <span class="status-badge" th:classappend="${product.status == 'ON_SALE' ? 'status-on-sale' : 'status-off-sale'}">
-                                    <span th:text="${product.status == 'ON_SALE' ? '在售' : '下架'}"></span>
-                                </span>
+                                <span class="badge" th:classappend="${product.status == 'ON_SALE'} ? 'badge-success' : 'badge-danger'"
+                                      th:text="${product.status == 'ON_SALE'} ? '在售' : '下架'"></span>
                             </td>
                             <td>
                                 <div class="action-buttons">
-                                    <a th:href="'/admin/product/edit?id=' + ${product.id}" class="btn btn-secondary">编辑</a>
-                                    <a th:href="'/admin/product/delete?id=' + ${product.id}" class="btn btn-danger" onclick="return confirm('确定删除吗？')">删除</a>
+                                    <a th:href="'/admin/product/edit?id=' + ${product.id}" class="btn btn-secondary btn-sm">编辑</a>
+                                    <a th:href="'/admin/product/delete?id=' + ${product.id}" class="btn btn-danger btn-sm" onclick="return confirm('确定删除吗？')">删除</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(products)}">
+                            <td colspan="8">
+                                <div class="empty-state">
+                                    <div class="empty-icon">📦</div>
+                                    <p>暂无商品数据</p>
                                 </div>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+
+                <div class="pagination-wrapper" th:if="${totalPages > 1}">
+                    <div class="pagination-info">
+                        共 <strong th:text="${totalItems}">0</strong> 条记录，第 <strong th:text="${currentPage + 1}">1</strong> / <strong th:text="${totalPages}">1</strong> 页
+                    </div>
+                    <div class="pagination">
+                        <a th:href="@{/admin/products(page=0, keyword=${keyword}, categoryId=${categoryId}, status=${status}, sort=${sort})}" th:classappend="${currentPage == 0} ? 'disabled'">«</a>
+                        <a th:href="@{/admin/products(page=${currentPage - 1}, keyword=${keyword}, categoryId=${categoryId}, status=${status}, sort=${sort})}" th:classappend="${currentPage == 0} ? 'disabled'">‹</a>
+                        <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                            <a th:if="${i >= currentPage - 3 and i <= currentPage + 3}" th:href="@{/admin/products(page=${i}, keyword=${keyword}, categoryId=${categoryId}, status=${status}, sort=${sort})}" th:text="${i + 1}" th:classappend="${i == currentPage} ? 'active'"></a>
+                        </th:block>
+                        <a th:href="@{/admin/products(page=${currentPage + 1}, keyword=${keyword}, categoryId=${categoryId}, status=${status}, sort=${sort})}" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">›</a>
+                        <a th:href="@{/admin/products(page=${totalPages - 1}, keyword=${keyword}, categoryId=${categoryId}, status=${status}, sort=${sort})}" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">»</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>

@@ -30,4 +30,30 @@
     <delete id="deleteAll">
         TRUNCATE TABLE sys_logs
     </delete>
+
+    <select id="findFiltered" resultMap="SysLogResultMap">
+        SELECT * FROM sys_logs
+        <where>
+            <if test="level != null and level != ''">
+                AND log_level = #{level}
+            </if>
+            <if test="searchKeyword != null and searchKeyword != ''">
+                AND (log_content LIKE CONCAT('%', #{searchKeyword}, '%') OR class_name LIKE CONCAT('%', #{searchKeyword}, '%') OR username LIKE CONCAT('%', #{searchKeyword}, '%'))
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countFiltered" resultType="int">
+        SELECT COUNT(*) FROM sys_logs
+        <where>
+            <if test="level != null and level != ''">
+                AND log_level = #{level}
+            </if>
+            <if test="searchKeyword != null and searchKeyword != ''">
+                AND (log_content LIKE CONCAT('%', #{searchKeyword}, '%') OR class_name LIKE CONCAT('%', #{searchKeyword}, '%') OR username LIKE CONCAT('%', #{searchKeyword}, '%'))
+            </if>
+        </where>
+    </select>
 </mapper>

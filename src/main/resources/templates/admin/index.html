@@ -1,156 +1,154 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>后台管理</title>
-    <link rel="stylesheet" href="/css/admin_style.css">
-    <script src="/js/chart.js"></script>
-</head>
+<head th:replace="~{admin/fragments :: admin-head('仪表盘')}"></head>
 <body>
 <div class="admin-container">
-    <!-- 侧边栏 -->
-    <div class="sidebar">
-        <h2>电子商城</h2>
-        <a href="/admin">首页</a>
-        <a href="/admin/products">商品管理</a>
-        <a href="/admin/categories">分类管理</a>
-        <a href="/admin/orders">订单管理</a>
-        <a href="/admin/users">用户管理</a>
-        <a href="/">返回前台</a>
-        <a href="/admin/logs" class="active">系统日志</a>
-        <a href="/logout">退出登录</a>
-    </div>
+    <div th:replace="~{admin/fragments :: admin-sidebar('dashboard')}"></div>
 
-    <!-- 主内容 -->
     <div class="main-content">
-        <div class="admin-header">
-            <h1>后台管理仪表盘</h1>
+        <div class="page-header">
+            <h1>仪表盘</h1>
             <div class="user-info">
                 <span th:text="'欢迎，' + ${session.user.username}"></span>
-                <a href="/admin">首页</a>
             </div>
         </div>
 
-        <!-- 今日数据概览 -->
-        <div class="dashboard-section">
-            <h2 style="margin-bottom: 20px; color: #333;">今日数据</h2>
-            <div class="stats-row">
-                <div class="stats-column">
-                    <div class="stat-card">
-                        <h3>今日新增商品</h3>
-                        <div class="value" th:text="${todayNewProducts}">0</div>
+        <div class="page-content">
+            <div class="dashboard-section fade-in">
+                <div class="section-title">📊 今日数据</div>
+                <div class="stats-grid">
+                    <div class="stat-card card-primary">
+                        <div class="stat-header">
+                            <span class="stat-label">今日新增商品</span>
+                            <div class="stat-icon">📦</div>
+                        </div>
+                        <div class="stat-value" th:text="${todayNewProducts}">0</div>
                     </div>
-                    <div class="stat-card">
-                        <h3>今日订单数</h3>
-                        <div class="value" th:text="${todayOrders}">0</div>
+                    <div class="stat-card card-success">
+                        <div class="stat-header">
+                            <span class="stat-label">今日订单数</span>
+                            <div class="stat-icon">📋</div>
+                        </div>
+                        <div class="stat-value" th:text="${todayOrders}">0</div>
                     </div>
-                </div>
-                <div class="stats-column">
-                    <div class="stat-card">
-                        <h3>今日新增用户</h3>
-                        <div class="value" th:text="${todayNewUsers}">0</div>
+                    <div class="stat-card card-info">
+                        <div class="stat-header">
+                            <span class="stat-label">今日新增用户</span>
+                            <div class="stat-icon">👥</div>
+                        </div>
+                        <div class="stat-value" th:text="${todayNewUsers}">0</div>
                     </div>
-                    <div class="stat-card">
-                        <h3>今日销售额</h3>
-                        <div class="value" th:text="'¥' + ${#numbers.formatDecimal(todaySales, 1, 2)}">¥0.00</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 总体统计 -->
-        <div class="dashboard-section">
-            <h2 style="margin-bottom: 20px; color: #333;">总体统计</h2>
-            <div class="stats">
-                <div class="stat-card">
-                    <h3>商品总数</h3>
-                    <div class="value" th:text="${totalProducts}">0</div>
-                </div>
-                <div class="stat-card">
-                    <h3>分类数量</h3>
-                    <div class="value" th:text="${totalCategories}">0</div>
-                </div>
-                <div class="stat-card">
-                    <h3>订单总数</h3>
-                    <div class="value" th:text="${totalOrders}">0</div>
-                </div>
-                <div class="stat-card">
-                    <h3>用户数量</h3>
-                    <div class="value" th:text="${totalUsers}">0</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 销售额趋势图表 -->
-        <div class="dashboard-section">
-            <div class="chart-container">
-                <div class="chart-header">
-                    <div class="chart-title">近 7 天销售趋势</div>
-                </div>
-                <div id="chartLoading" class="loading">加载图表数据...</div>
-                <canvas id="salesTrendChart" height="80" style="display: none;"></canvas>
-                <div id="chartNoData" class="loading" style="display: none;">暂无销售趋势数据</div>
-            </div>
-        </div>
-
-        <div class="dashboard-section fade-in">
-            <div class="chart-container">
-                <div class="chart-header">
-                    <div class="chart-title">用户活跃度统计</div>
-                </div>
-                <div class="activity-stats">
-                    <div class="activity-item">
-                        <div class="label">今日活跃用户</div>
-                        <div class="value" th:text="${userActivity.activeUsersToday} ?: 0">0</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="label">近 7 天活跃用户</div>
-                        <div class="value" th:text="${userActivity.activeUsersWeek} ?: 0">0</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="label">近 30 天活跃用户</div>
-                        <div class="value" th:text="${userActivity.activeUsersMonth} ?: 0">0</div>
+                    <div class="stat-card card-warning">
+                        <div class="stat-header">
+                            <span class="stat-label">今日销售额</span>
+                            <div class="stat-icon">💰</div>
+                        </div>
+                        <div class="stat-value" th:text="'¥' + ${#numbers.formatDecimal(todaySales, 1, 2)}">¥0.00</div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="dashboard-section fade-in">
-            <div class="chart-container">
-                <div class="chart-header">
-                    <div class="chart-title">热门商品 TOP 10</div>
+            <div class="dashboard-section fade-in">
+                <div class="section-title">📈 总体统计</div>
+                <div class="stats-grid">
+                    <div class="stat-card card-primary">
+                        <div class="stat-header">
+                            <span class="stat-label">商品总数</span>
+                            <div class="stat-icon">📦</div>
+                        </div>
+                        <div class="stat-value" th:text="${totalProducts}">0</div>
+                    </div>
+                    <div class="stat-card card-purple">
+                        <div class="stat-header">
+                            <span class="stat-label">分类数量</span>
+                            <div class="stat-icon">🏷️</div>
+                        </div>
+                        <div class="stat-value" th:text="${totalCategories}">0</div>
+                    </div>
+                    <div class="stat-card card-success">
+                        <div class="stat-header">
+                            <span class="stat-label">订单总数</span>
+                            <div class="stat-icon">📋</div>
+                        </div>
+                        <div class="stat-value" th:text="${totalOrders}">0</div>
+                    </div>
+                    <div class="stat-card card-info">
+                        <div class="stat-header">
+                            <span class="stat-label">用户数量</span>
+                            <div class="stat-icon">👥</div>
+                        </div>
+                        <div class="stat-value" th:text="${totalUsers}">0</div>
+                    </div>
                 </div>
-                <table class="hot-products-table">
-                    <thead>
-                        <tr>
-                            <th>排名</th>
-                            <th>商品图片</th>
-                            <th>商品名称</th>
-                            <th>价格</th>
-                            <th>销量</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="product, iterStat : ${hotProducts}">
-                            <td th:text="${iterStat.index + 1}">1</td>
-                            <td>
-                                <img th:if="${product.imageUrl}"
-                                     th:src="${product.imageUrl}"
-                                     alt="商品图片"/>
-                                <div th:unless="${product.imageUrl}" style="width: 40px; height: 40px; background: #eee; border-radius: 4px;"></div>
-                            </td>
-                            <td th:text="${product.name}">商品名称</td>
-                            <td th:text="'¥' + ${#numbers.formatDecimal(product.price, 1, 2)}">¥0.00</td>
-                            <td>
-                                <span style="color: #dc3545; font-weight: bold;"
-                                      th:text="${product.totalSold}">0</span>
-                            </td>
-                        </tr>
-                        <tr th:if="${#lists.isEmpty(hotProducts)}">
-                            <td colspan="5" style="text-align: center; padding: 30px; color: #999;">暂无销售数据</td>
-                        </tr>
-                    </tbody>
-                </table>
+            </div>
+
+            <div class="dashboard-section fade-in">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">📈 近 7 天销售趋势</div>
+                    </div>
+                    <div id="chartLoading" class="loading">加载图表数据...</div>
+                    <canvas id="salesTrendChart" height="80" style="display: none;"></canvas>
+                    <div id="chartNoData" class="loading" style="display: none;">暂无销售趋势数据</div>
+                </div>
+            </div>
+
+            <div class="dashboard-section fade-in">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">👥 用户活跃度统计</div>
+                    </div>
+                    <div class="activity-stats">
+                        <div class="activity-item">
+                            <div class="label">今日活跃用户</div>
+                            <div class="value" th:text="${userActivity.activeUsersToday} ?: 0">0</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="label">近 7 天活跃用户</div>
+                            <div class="value" th:text="${userActivity.activeUsersWeek} ?: 0">0</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="label">近 30 天活跃用户</div>
+                            <div class="value" th:text="${userActivity.activeUsersMonth} ?: 0">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-section fade-in">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">🔥 热门商品 TOP 10</div>
+                    </div>
+                    <table class="hot-products-table">
+                        <thead>
+                            <tr>
+                                <th>排名</th>
+                                <th>商品图片</th>
+                                <th>商品名称</th>
+                                <th>价格</th>
+                                <th>销量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="product, iterStat : ${hotProducts}">
+                                <td th:text="${iterStat.index + 1}">1</td>
+                                <td>
+                                    <img th:if="${product.imageUrl}" th:src="${product.imageUrl}" alt="商品图片"/>
+                                    <div th:unless="${product.imageUrl}" style="width: 40px; height: 40px; background: var(--gray-100); border-radius: 8px;"></div>
+                                </td>
+                                <td th:text="${product.name}">商品名称</td>
+                                <td th:text="'¥' + ${#numbers.formatDecimal(product.price, 1, 2)}">¥0.00</td>
+                                <td>
+                                    <span style="color: var(--danger); font-weight: 700;" th:text="${product.totalSold}">0</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(hotProducts)}">
+                                <td colspan="5" class="empty-state">暂无销售数据</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -159,7 +157,7 @@
 <script th:inline="javascript">
     window.salesTrendData = /*[[${salesTrend}]]*/ [];
 </script>
+<script src="/js/chart.js"></script>
 <script src="/js/admin_dashboard.js"></script>
-
 </body>
 </html>

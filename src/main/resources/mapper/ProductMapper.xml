@@ -132,4 +132,47 @@
         WHERE category_id = #{fromCategoryId}
     </update>
 
+    <select id="findFiltered" resultMap="BaseResultMap">
+        SELECT p.*, c.name as category_name
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND p.name LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND p.category_id = #{categoryId}
+            </if>
+            <if test="status != null and status != ''">
+                AND p.status = #{status}
+            </if>
+        </where>
+        ORDER BY
+        <choose>
+            <when test="sort == 'price_asc'">p.price ASC</when>
+            <when test="sort == 'price_desc'">p.price DESC</when>
+            <when test="sort == 'stock_asc'">p.stock ASC</when>
+            <when test="sort == 'stock_desc'">p.stock DESC</when>
+            <when test="sort == 'id_asc'">p.id ASC</when>
+            <otherwise>p.id DESC</otherwise>
+        </choose>
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countFiltered" resultType="int">
+        SELECT COUNT(*)
+        FROM products p
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND p.name LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND p.category_id = #{categoryId}
+            </if>
+            <if test="status != null and status != ''">
+                AND p.status = #{status}
+            </if>
+        </where>
+    </select>
+
 </mapper>

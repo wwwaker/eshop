@@ -90,4 +90,40 @@
             (SELECT COUNT(DISTINCT user_id) FROM orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)) as activeUsersMonth
     </select>
 
+    <select id="findFiltered" resultMap="OrderResultMap">
+        SELECT o.*, u.username
+        FROM orders o
+        JOIN users u ON o.user_id = u.id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (o.order_no LIKE CONCAT('%', #{keyword}, '%') OR u.username LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="status != null and status != ''">
+                AND o.status = #{status}
+            </if>
+        </where>
+        ORDER BY
+        <choose>
+            <when test="sort == 'created_asc'">o.created_at ASC</when>
+            <when test="sort == 'amount_desc'">o.total_amount DESC</when>
+            <when test="sort == 'amount_asc'">o.total_amount ASC</when>
+            <otherwise>o.created_at DESC</otherwise>
+        </choose>
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countFiltered" resultType="int">
+        SELECT COUNT(*)
+        FROM orders o
+        JOIN users u ON o.user_id = u.id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (o.order_no LIKE CONCAT('%', #{keyword}, '%') OR u.username LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="status != null and status != ''">
+                AND o.status = #{status}
+            </if>
+        </where>
+    </select>
+
 </mapper>

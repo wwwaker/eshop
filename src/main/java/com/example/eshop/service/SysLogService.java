@@ -105,4 +105,13 @@ public class SysLogService {
         sysLogDao.deleteAll();
         log.info("系统日志已清空");
     }
+
+    public List<SysLog> findFiltered(String level, String searchKeyword, int page, int pageSize) {
+        int offset = page * pageSize;
+        return sysLogDao.findFiltered(level, searchKeyword, offset, pageSize);
+    }
+
+    public int countFiltered(String level, String searchKeyword) {
+        return sysLogDao.countFiltered(level, searchKeyword);
+    }
 }

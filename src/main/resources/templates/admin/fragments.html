@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="admin-head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - 管理后台'">管理后台</title>
+    <link rel="stylesheet" href="/css/admin_style.css">
+</head>
+<body>
+
+<div th:fragment="admin-sidebar(activeMenu)">
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <h2>电子商城</h2>
+        </div>
+        <div class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">概览</div>
+                <a href="/admin" th:classappend="${activeMenu == 'dashboard'} ? 'active'">
+                    <span class="nav-icon">📊</span> 仪表盘
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">管理</div>
+                <a href="/admin/products" th:classappend="${activeMenu == 'products'} ? 'active'">
+                    <span class="nav-icon">📦</span> 商品管理
+                </a>
+                <a href="/admin/categories" th:classappend="${activeMenu == 'categories'} ? 'active'">
+                    <span class="nav-icon">🏷️</span> 分类管理
+                </a>
+                <a href="/admin/orders" th:classappend="${activeMenu == 'orders'} ? 'active'">
+                    <span class="nav-icon">📋</span> 订单管理
+                </a>
+                <a href="/admin/users" th:classappend="${activeMenu == 'users'} ? 'active'">
+                    <span class="nav-icon">👥</span> 用户管理
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">系统</div>
+                <a href="/admin/logs" th:classappend="${activeMenu == 'logs'} ? 'active'">
+                    <span class="nav-icon">📝</span> 系统日志
+                </a>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <a href="/">
+                <span class="nav-icon">🏠</span> 返回前台
+            </a>
+            <a href="/logout">
+                <span class="nav-icon">🚪</span> 退出登录
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
